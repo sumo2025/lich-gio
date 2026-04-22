@@ -295,7 +295,11 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 /* ── HDSD Full-screen overlay ── */
 .page-overlay{display:none;position:fixed;inset:0;background:var(--paper);z-index:2000;overflow-y:auto;animation:fadeIn .25s ease;}
 .page-overlay.visible{display:block;}
-.page-overlay-inner{max-width:780px;margin:0 auto;padding:28px 22px 60px;}
+.page-overlay-inner{
+  max-width:780px;margin:0 auto;
+  /* Safe area: thêm padding cho tai thỏ trên overlay full-screen */
+  padding:calc(28px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) 60px calc(22px + env(safe-area-inset-left));
+}
 .page-overlay-header{display:flex;align-items:center;gap:14px;margin-bottom:26px;padding-bottom:14px;border-bottom:2px solid var(--border);}
 .btn-back{padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;flex-shrink:0;transition:background .2s;}
 .btn-back:hover{background:var(--red-light);}
@@ -325,21 +329,23 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 }
 .backup-modal-overlay.visible{display:flex;}
 .backup-modal-box{
-  background:var(--card-bg);border-radius:14px;padding:32px 28px 24px;
-  max-width:360px;width:100%;text-align:center;
+  background:var(--card-bg);border-radius:14px;padding:28px 24px 22px;
+  max-width:360px;width:100%;
   box-shadow:0 8px 40px rgba(0,0,0,.25);
   animation:slideIn .25s ease;
 }
-.backup-modal-icon{font-size:48px;margin-bottom:12px;line-height:1;}
-.backup-modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--red);margin-bottom:12px;}
-.backup-modal-msg{font-size:var(--fs-base);color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.backup-modal-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.backup-modal-icon{font-size:32px;line-height:1;flex-shrink:0;}
+.backup-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--red);}
+.backup-modal-msg{font-size:var(--fs-base);color:var(--muted);line-height:1.75;margin-bottom:20px;text-align:left;}
+.backup-modal-footer{text-align:right;}
 .backup-modal-btn{
-  padding:10px 32px;background:var(--red);color:white;border:none;border-radius:8px;
+  padding:9px 28px;background:var(--red);color:white;border:none;border-radius:8px;
   font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;
 }
 .backup-modal-btn:hover{background:var(--red-light);}
 
-
+/* ── Edit search ── */
 .edit-search-wrap{margin-bottom:12px;}
 .edit-search-box{
   width:100%;padding:0 12px 0 36px;height:40px;
@@ -425,7 +431,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   .toast{bottom:0;left:0;right:0;border-radius:0;text-align:center;padding:14px 16px;}
   footer{padding:16px 12px 16px;}
   .footer-inner{font-size:12px;gap:6px;}
-  .page-overlay-inner{padding:18px 12px 50px;}
+  .page-overlay-inner{padding:calc(18px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 50px calc(12px + env(safe-area-inset-left));}
 
   /* Edit table mobile adjustments */
   .edit-table th:nth-child(1),.edit-table td:nth-child(1){min-width:100px;}
@@ -586,7 +592,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.0</span>
+    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.1</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -598,10 +604,14 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <!-- Modal thông báo sao lưu thành công -->
 <div class="backup-modal-overlay" id="backup-modal" onclick="closeBackupModal()">
   <div class="backup-modal-box" onclick="event.stopPropagation()">
-    <div class="backup-modal-icon">✅</div>
-    <p class="backup-modal-title">Sao lưu thành công!</p>
-    <p class="backup-modal-msg">Hãy lưu giữ file này cẩn thận — bạn có thể dùng để khôi phục dữ liệu khi chuyển sang thiết bị mới hoặc lỡ xóa lịch sử trình duyệt.</p>
-    <button onclick="closeBackupModal()" class="backup-modal-btn">Đã hiểu</button>
+    <div class="backup-modal-top">
+      <div class="backup-modal-icon">✅</div>
+      <div class="backup-modal-title">Sao lưu thành công!</div>
+    </div>
+    <p class="backup-modal-msg">Hãy lưu giữ file này thật cẩn thận. Bạn có thể dùng để khôi phục lại toàn bộ dữ liệu ngày giỗ khi chuyển sang thiết bị mới hoặc lỡ tay xóa lịch sử trình duyệt.</p>
+    <div class="backup-modal-footer">
+      <button onclick="closeBackupModal()" class="backup-modal-btn">Đã hiểu</button>
+    </div>
   </div>
 </div>
 
@@ -626,9 +636,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         </ul>
         <p style="margin-top:12px">👉 <strong>Khuyến nghị:</strong> Sử dụng <strong>một trình duyệt cố định</strong> trên thiết bị chính. Định kỳ nhấn nút bên dưới để sao lưu dữ liệu dự phòng.</p>
         <div style="margin-top:16px;text-align:center;">
-          <button onclick="backupData()" style="padding:10px 24px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">
-            💾 Sao lưu dữ liệu
-          </button>
+          <button onclick="backupData()" style="padding:10px 24px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">💾 Sao lưu dữ liệu</button>
         </div>
       </div>
 
@@ -721,7 +729,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.0';
+const APP_VERSION='1.4.1';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1175,16 +1183,11 @@ function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('vi
 // ════════════════════════════════════════════
 function backupData(){
   try{
-    const backup={
-      version:APP_VERSION,
-      exportedAt:new Date().toISOString(),
-      data:data
-    };
+    const backup={version:APP_VERSION,exportedAt:new Date().toISOString(),data:data};
     const json=JSON.stringify(backup,null,2);
-    const date=new Date();
-    const fname=`lichgio_backup_${date.getFullYear()}${p2(date.getMonth()+1)}${p2(date.getDate())}.json`;
+    const d=new Date();
+    const fname=`lichgio_backup_${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}.json`;
     dlBlob(json,'application/json',fname);
-    // Hiển thị modal thông báo
     document.getElementById('backup-modal').classList.add('visible');
   }catch(e){showToast('⚠ Không thể xuất dữ liệu.');}
 }
@@ -1195,43 +1198,31 @@ function closeBackupModal(){document.getElementById('backup-modal').classList.re
 // ════════════════════════════════════════════
 (function(){
   if(!('serviceWorker' in navigator))return;
-  // Tạo SW blob để bypass CSP inline — SW tự fetch lại trang khi có version mới
   const swCode=`
 const CACHE='ngaygio-v${APP_VERSION}';
-const URL_TO_CACHE=['./'];
 self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URL_TO_CACHE)).then(()=>self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',e=>{
-  e.waitUntil(
-    caches.keys().then(keys=>Promise.all(
-      keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
-    )).then(()=>self.clients.claim())
-  );
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
 self.addEventListener('fetch',e=>{
   if(e.request.mode==='navigate'){
-    e.respondWith(
-      fetch(e.request).then(res=>{
-        const clone=res.clone();
-        caches.open(CACHE).then(c=>c.put(e.request,clone));
-        return res;
-      }).catch(()=>caches.match(e.request))
-    );
+    e.respondWith(fetch(e.request).then(res=>{caches.open(CACHE).then(c=>c.put(e.request,res.clone()));return res;}).catch(()=>caches.match(e.request)));
     return;
   }
   e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
 });
+self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
 `;
   const blob=new Blob([swCode],{type:'application/javascript'});
   const swUrl=URL.createObjectURL(blob);
   navigator.serviceWorker.register(swUrl,{scope:'./'}).then(reg=>{
     reg.addEventListener('updatefound',()=>{
-      const newSW=reg.installing;
-      newSW.addEventListener('statechange',()=>{
-        if(newSW.state==='installed'&&navigator.serviceWorker.controller){
-          // Có bản cập nhật mới — tự reload
-          newSW.postMessage({type:'SKIP_WAITING'});
+      const nw=reg.installing;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed'&&navigator.serviceWorker.controller){
+          nw.postMessage({type:'SKIP_WAITING'});
           navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
         }
       });
