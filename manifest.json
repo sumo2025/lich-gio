@@ -1,8 +1,8 @@
 {
   "name": "Lịch giỗ dòng họ",
   "short_name": "Lịch giỗ",
-  "start_url": "/index.html",
-  "display": "fullscreen",        // hoặc "standalone" (không có address bar)
+  "start_url": "./index.html",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "icons": [
