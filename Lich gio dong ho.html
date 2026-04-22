@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; connect-src 'none';">
+<title>Lịch Giỗ Dòng Họ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%238b1a1a'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='34' font-family='serif'%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E">
+<style>
+/* ── CSS Variables: Light & Dark ── */
+:root {
+  --ink:#1a1209; --paper:#faf7f2; --gold:#b8860b; --gold-light:#d4a017;
+  --red:#8b1a1a; --red-light:#c0392b; --sage:#5a7a5a; --blue:#2c5f8a;
+  --muted:#6b5c4c; --border:#d4c9b8;
+  --card-bg:#ffffff; --input-bg:#faf7f2;
+  --cat-cung-bg:#fdf0ec; --cat-gui-bg:#ecf3fd; --cat-nho-bg:#ecfdf3;
+  --upcoming-bg:#ffffff; --upcoming-hover:#fffbf0;
+  --shadow:0 4px 24px rgba(26,18,9,.10);
+  --modal-overlay:rgba(0,0,0,.55);
+  /* Req 3: font +5% (base 14px → 14.7px) */
+  --fs-base:14.7px; --fs-sm:12.6px; --fs-md:15.75px; --fs-lg:16.8px;
+}
+[data-theme="dark"] {
+  --ink:#e8dfd0; --paper:#1a1510; --gold:#d4a017; --gold-light:#e8b820;
+  --red:#c0392b; --red-light:#e74c3c; --sage:#6a9a6a; --blue:#4a85ba;
+  --muted:#a09080; --border:#3a3020;
+  --card-bg:#231e18; --input-bg:#2a2318;
+  --cat-cung-bg:#2a1a18; --cat-gui-bg:#192030; --cat-nho-bg:#182518;
+  --upcoming-bg:#231e18; --upcoming-hover:#2e2818;
+  --shadow:0 4px 24px rgba(0,0,0,.40);
+  --modal-overlay:rgba(0,0,0,.75);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Lora',Georgia,serif;
+  background:var(--paper);color:var(--ink);min-height:100vh;
+  font-size:var(--fs-base); /* +5% vs 14px base = 14.7px */
+  transition:background .3s,color .3s;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(ellipse 80% 60% at 10% 15%,rgba(184,134,11,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 85%,rgba(139,26,26,.05) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+.wrapper{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:10px 20px 0;}
+
+/* ── Header ── */
+header{text-align:center;padding:12px 60px 18px;border-bottom:2px solid var(--border);margin-bottom:20px;position:relative;}
+header::after{content:'✦  ✦  ✦';display:block;color:var(--gold);font-size:12px;letter-spacing:8px;margin-top:12px;}
+.header-ornament{color:var(--gold);font-size:22px;letter-spacing:6px;opacity:.7;margin-bottom:8px;}
+header h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(26px,5vw,42px);font-weight:700;color:var(--red);letter-spacing:1px;line-height:1.2;}
+header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:italic;}
+.btn-darkmode{
+  position:absolute;top:14px;right:14px;
+  background:none;border:1.5px solid var(--border);border-radius:20px;
+  padding:5px 12px;font-size:16px;cursor:pointer;color:var(--muted);
+  transition:border-color .2s,background .2s;line-height:1;
+}
+.btn-darkmode:hover{border-color:var(--gold);background:var(--input-bg);}
+
+/* ── Legend ── */
+.legend{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:var(--fs-base);color:var(--muted);}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.15);flex-shrink:0;}
+
+/* ── Controls ── */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:stretch;}
+.search-box{
+  flex:1 1 160px;min-width:0;
+  padding:0 12px 0 36px;height:42px;
+  border:1px solid var(--border);border-radius:8px;
+  font-family:'Lora',serif;font-size:var(--fs-base);
+  background:var(--card-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='%236b5c4c' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 10px center;
+  outline:none;transition:border-color .2s;color:var(--ink);
+}
+.search-box:focus{border-color:var(--gold);}
+.filter-month{
+  padding:0 28px 0 10px;height:42px;border:1px solid var(--border);border-radius:8px;
+  font-family:'Lora',serif;font-size:var(--fs-base);background:var(--card-bg);color:var(--ink);
+  outline:none;cursor:pointer;flex-shrink:0;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b5c4c'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.filter-month:focus{border-color:var(--gold);}
+.ctrl-btn{
+  padding:0 15px;height:42px;border:none;border-radius:8px;
+  font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;white-space:nowrap;flex-shrink:0;
+  transition:background .2s,transform .1s;color:white;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.ctrl-btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-add-goto{background:var(--red);}
+.btn-ics{background:var(--blue);}
+.btn-hdsd{background:var(--sage);}
+
+/* ── Upcoming Panel ── */
+.upcoming-panel{
+  background:var(--upcoming-bg);border:1px solid #e8d5a3;border-left:4px solid var(--gold);
+  border-radius:10px;margin-bottom:28px;
+  box-shadow:0 2px 12px rgba(184,134,11,.10);overflow:hidden;
+}
+.upcoming-panel-header{
+  background:linear-gradient(135deg,#7a5c00 0%,#b8860b 100%);
+  color:white;padding:13px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.upcoming-panel-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+.upcoming-panel-count{font-size:var(--fs-sm);opacity:.8;font-style:italic;}
+.upcoming-list{padding:0;}
+.upcoming-item{
+  display:grid;grid-template-columns:1fr 88px 114px 82px;
+  padding:10px 20px;border-bottom:1px solid rgba(184,134,11,.09);
+  align-items:center;transition:background .15s;
+}
+.upcoming-item:last-child{border-bottom:none;}
+.upcoming-item:hover{background:var(--upcoming-hover);}
+.upcoming-name{font-size:var(--fs-md);font-weight:500;color:var(--ink);}
+.upcoming-cat-tag{font-size:11px;padding:2px 8px;border-radius:20px;font-family:'Lora',serif;font-weight:500;margin-left:7px;vertical-align:middle;}
+.tag-cung{background:#fdecea;color:var(--red);}
+.tag-gui{background:#eaf4fb;color:var(--blue);}
+.tag-nho{background:#eafaf1;color:var(--sage);}
+.upcoming-lunar{font-size:var(--fs-base);color:var(--muted);text-align:center;}
+.upcoming-solar{font-size:var(--fs-base);font-weight:600;color:#8a6000;text-align:center;font-family:'Lora',serif;}
+.upcoming-days{font-size:var(--fs-base);text-align:center;font-family:'Lora',serif;font-weight:500;}
+.days-today{color:var(--red);font-weight:700;}
+.days-near{color:#b05000;}
+.days-far{color:var(--muted);}
+.upcoming-empty{padding:18px 20px;font-size:var(--fs-base);color:#bbb;font-style:italic;text-align:center;}
+
+/* ── Month Section ── */
+.month-section{margin-bottom:26px;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);}
+.month-header{background:linear-gradient(135deg,var(--red) 0%,#6b1414 100%);color:white;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;}
+.month-name{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;letter-spacing:1px;}
+.month-count{font-size:var(--fs-sm);opacity:.75;font-style:italic;}
+.month-body{background:var(--card-bg);}
+
+/* ── Category ── */
+.category{border-bottom:1px solid #f0e8df;}
+.category:last-child{border-bottom:none;}
+.category-header{padding:10px 20px;font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+.cat-cung .category-header{background:var(--cat-cung-bg);color:var(--red);}
+.cat-gui  .category-header{background:var(--cat-gui-bg);color:var(--blue);}
+.cat-nho  .category-header{background:var(--cat-nho-bg);color:var(--sage);}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cat-cung .cat-dot{background:var(--red-light);}
+.cat-gui  .cat-dot{background:var(--blue);}
+.cat-nho  .cat-dot{background:var(--sage);}
+.entry-list{padding:0;}
+.entry-row{
+  display:grid;grid-template-columns:1fr 95px 115px;
+  padding:11px 20px;border-top:1px solid rgba(0,0,0,.04);
+  align-items:center;transition:background .15s;
+  animation:fadeIn .3s ease;
+  position:relative;overflow:hidden;
+}
+.cat-cung .entry-row:hover{background:#fff6f4;}
+.cat-gui  .entry-row:hover{background:#f5f8ff;}
+.cat-nho  .entry-row:hover{background:#f5fff8;}
+.entry-name{font-size:var(--fs-md);font-weight:500;color:var(--ink);}
+.entry-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:2px;}
+.entry-lunar{font-size:14px;color:var(--muted);text-align:center;}
+.entry-solar{font-size:var(--fs-base);font-weight:500;text-align:center;font-family:'Lora',serif;}
+.cat-cung .entry-solar{color:var(--red);}
+.cat-gui  .entry-solar{color:var(--blue);}
+.cat-nho  .entry-solar{color:var(--sage);}
+.entry-row:hover .entry-row.swiped .entry-row.swiped .upcoming-soon{background:linear-gradient(90deg,rgba(184,134,11,.05) 0%,transparent 100%) !important;}
+.days-badge{font-size:11px;background:var(--gold);color:white;padding:1px 7px;border-radius:20px;margin-left:6px;font-family:'Lora',serif;}
+.empty-cat{padding:12px 20px;font-size:var(--fs-base);color:#bbb;font-style:italic;}
+.no-results{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;font-size:var(--fs-lg);}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--paper);
+  padding:13px 22px;border-radius:8px;font-size:var(--fs-base);font-family:'Lora',serif;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(80px);opacity:0;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:3000;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── Add/Edit Section — Tabs ── */
+.add-section{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:12px;
+  margin-top:40px;box-shadow:var(--shadow);position:relative;z-index:1;overflow:hidden;
+}
+.tab-bar{display:flex;border-bottom:2px solid var(--border);}
+.tab-btn{
+  flex:1;padding:13px 10px;background:none;border:none;cursor:pointer;
+  font-family:'Playfair Display',serif;font-size:var(--fs-md);color:var(--muted);
+  transition:color .2s,background .2s;position:relative;
+}
+.tab-btn:first-child{border-radius:12px 0 0 0;}
+.tab-btn:last-child{border-radius:0 12px 0 0;}
+.tab-btn.active{color:var(--red);font-weight:600;}
+.tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--red);}
+.tab-btn:hover:not(.active){background:var(--input-bg);color:var(--ink);}
+.tab-panel{display:none;padding:22px 26px 20px;animation:slideIn .25s ease;}
+.tab-panel.active{display:block;}
+.tab-section-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:9px;}
+.tab-section-title::before{content:'✦';font-size:14px;opacity:.7;}
+
+/* ── Form grid ── */
+/* Desktop: Tháng âm lịch 141px (+10%), ghi chú thu hẹp tương đương */
+.form-grid{
+  display:grid;
+  grid-template-columns:1.1fr 110px 96px 141px 1.18fr auto;
+  gap:11px;align-items:end;
+}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:var(--fs-sm);color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.form-group input,.form-group select{
+  padding:0 10px;height:42px;border:1px solid var(--border);border-radius:7px;
+  font-family:'Lora',serif;font-size:15px;background:var(--input-bg);color:var(--ink);
+  transition:border-color .2s;outline:none;width:100%;
+   /* chiều cao đồng đều */
+  appearance:none;-webkit-appearance:none;
+}
+.form-group select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b5c4c'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:28px;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);}
+.btn-add{
+  padding:9px 16px;background:var(--red);color:white;border:none;border-radius:7px;
+  font-family:'Playfair Display',serif;font-size:var(--fs-base);cursor:pointer;
+  transition:background .2s,transform .1s;white-space:nowrap;align-self:end;min-height:42px;
+}
+.btn-add:hover{background:var(--red-light);transform:translateY(-1px);}
+.solar-preview{
+  font-size:13px;color:var(--sage);margin-top:10px;min-height:18px;font-style:italic;
+  padding:7px 11px;background:#f0faf4;border-radius:6px;border-left:3px solid var(--sage);
+}
+[data-theme="dark"] .solar-preview{background:#182518;}
+
+/* ── PIN ── */
+.pin-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;gap:14px;text-align:center;}
+.pin-overlay p{font-size:var(--fs-md);color:var(--muted);font-style:italic;}
+.pin-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.pin-input{width:150px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Lora',serif;font-size:18px;text-align:center;letter-spacing:4px;background:var(--input-bg);color:var(--ink);outline:none;}
+.pin-input:focus{border-color:var(--gold);}
+.btn-pin-ok{padding:10px 20px;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:15px;cursor:pointer;transition:background .2s;}
+.btn-pin-ok:hover{background:var(--red-light);}
+.pin-error{color:var(--red);font-size:13px;min-height:18px;}
+
+
+/* ── Edit table per-row actions ── */
+.edit-row-actions{display:flex;flex-direction:column;gap:4px;align-items:center;}
+.btn-row-save{
+  padding:3px 10px;background:#7aaa7a;color:white;border:none;border-radius:5px;
+  font-family:'Lora',serif;font-size:12px;cursor:pointer;white-space:nowrap;width:52px;
+  transition:background .15s;
+}
+.btn-row-save:hover{background:#5a8a5a;}
+.btn-row-del{
+  padding:3px 10px;background:#c97070;color:white;border:none;border-radius:5px;
+  font-family:'Lora',serif;font-size:12px;cursor:pointer;white-space:nowrap;width:52px;
+  transition:background .15s;
+}
+.btn-row-del:hover{background:#b05050;}
+
+/* ── Edit table ── */
+.edit-table-wrap{overflow-x:auto;}
+.edit-table{width:100%;border-collapse:collapse;font-size:var(--fs-base);}
+.edit-table th{background:var(--input-bg);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:2px solid var(--border);text-align:left;font-weight:600;}
+.edit-table td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.edit-table tr:last-child td{border-bottom:none;}
+.edit-table tr:hover td{background:var(--input-bg);}
+.edit-td-input{width:100%;padding:5px 7px;border:1px solid var(--border);border-radius:5px;font-family:'Lora',serif;font-size:var(--fs-base);background:transparent;color:var(--ink);transition:border-color .15s;}
+.edit-td-input:focus{border-color:var(--gold);background:var(--card-bg);outline:none;}
+.edit-td-select{padding:5px 22px 5px 7px;border:1px solid var(--border);border-radius:5px;font-family:'Lora',serif;font-size:var(--fs-base);background:transparent;color:var(--ink);cursor:pointer;transition:border-color .15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b5c4c'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;}
+.edit-td-select:focus{border-color:var(--gold);background-color:var(--card-bg);outline:none;}
+.btn-edit-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:15px;padding:3px 7px;border-radius:4px;transition:color .15s;}
+.btn-edit-del:hover{color:var(--red-light);}
+.edit-actions{margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+.btn-save-all{padding:9px 20px;background:var(--sage);color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.btn-save-all:hover{background:#3d5e3d;}
+.btn-lock-edit{padding:9px 16px;background:var(--muted);color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.btn-lock-edit:hover{background:#4a3c30;}
+
+/* ── HDSD Full-screen overlay ── */
+.page-overlay{display:none;position:fixed;inset:0;background:var(--paper);z-index:2000;overflow-y:auto;animation:fadeIn .25s ease;}
+.page-overlay.visible{display:block;}
+.page-overlay-inner{max-width:780px;margin:0 auto;padding:28px 22px 60px;}
+.page-overlay-header{display:flex;align-items:center;gap:14px;margin-bottom:26px;padding-bottom:14px;border-bottom:2px solid var(--border);}
+.btn-back{padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;flex-shrink:0;transition:background .2s;}
+.btn-back:hover{background:var(--red-light);}
+.page-overlay-title{font-family:'Playfair Display',serif;font-size:var(--fs-lg);font-weight:700;color:var(--red);}
+.hdsd h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--red);margin:24px 0 10px;display:flex;align-items:center;gap:7px;}
+.hdsd h3:first-child{margin-top:0;}
+.hdsd p,.hdsd li{font-size:var(--fs-md);line-height:1.8;color:var(--ink);}
+.hdsd ol,.hdsd ul{padding-left:22px;margin:8px 0;}
+.hdsd li{margin-bottom:4px;}
+.hdsd .tip{background:#f0faf4;border-left:4px solid var(--sage);border-radius:6px;padding:12px 16px;margin:14px 0;font-size:14px;color:var(--muted);font-style:italic;line-height:1.7;}
+[data-theme="dark"] .hdsd .tip{background:#182518;}
+.hdsd .device-block{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:12px 0;box-shadow:var(--shadow);}
+.hdsd .device-block h3{margin-top:0;font-size:16px;}
+.hdsd strong{color:var(--ink);}
+.hdsd .warn{color:var(--red);font-weight:500;font-style:normal;}
+.hdsd hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
+.hdsd code{background:var(--input-bg);padding:2px 6px;border-radius:4px;font-size:13px;font-family:monospace;}
+
+
+
+
+/* ── Edit search ── */
+.edit-search-wrap{margin-bottom:12px;}
+.edit-search-box{
+  width:100%;padding:0 12px 0 36px;height:40px;
+  border:1px solid var(--border);border-radius:8px;
+  font-family:'Lora',serif;font-size:var(--fs-base);
+  background:var(--input-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236b5c4c' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 10px center;
+  color:var(--ink);outline:none;transition:border-color .2s;
+}
+.edit-search-box:focus{border-color:var(--gold);}
+
+/* ── Back to Home (fixed, shown when edit tab active) ── */
+.btn-back-home{
+  display:none;position:fixed;-webkit-position:sticky;bottom:20px;right:20px;z-index:900;
+  padding:0 16px;height:42px;background:var(--red);color:white;
+  border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);
+  cursor:pointer;box-shadow:0 4px 16px rgba(139,26,26,.35);
+  transition:background .2s,transform .1s,opacity .25s;
+  align-items:center;gap:6px;
+}
+.btn-back-home:hover{background:var(--red-light);transform:translateY(-2px);}
+.btn-back-home.visible{display:inline-flex;}
+
+/* ── Footer ── */
+footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px solid var(--border);position:relative;z-index:1;}
+.footer-inner{font-family:'Lora',serif;font-size:var(--fs-base);color:var(--muted);font-style:italic;display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.footer-inner strong{font-style:normal;color:var(--ink);}
+.footer-ornament{color:var(--gold);font-size:14px;opacity:.6;}
+
+/* ── Responsive Tablet ≤900px ── */
+@media(max-width:900px){
+  .wrapper{padding:8px 14px 0;}
+  .form-grid{grid-template-columns:1fr 1fr 1fr;}
+  .btn-ics{margin-left:0;}
+}
+
+/* ── Responsive Mobile ≤600px ── */
+@media(max-width:600px){
+  body{font-size:15px;}
+  .wrapper{padding:6px 10px 0;}
+  header{padding:10px 48px 14px;}
+  header h1{font-size:clamp(22px,7vw,30px);}
+  .header-ornament{font-size:17px;}
+  .btn-darkmode{top:10px;right:10px;padding:4px 10px;font-size:14px;}
+
+  .legend{gap:10px;}
+  .legend-item{font-size:13px;}
+
+  /* Controls: dọc, 42px đều */
+  .controls{flex-direction:column;align-items:stretch;gap:8px;}
+  .search-box{width:100%;height:42px;flex:none;}
+  .filter-month{width:100%;height:42px;text-align:left;}
+  .ctrl-btn{width:100%;height:42px;justify-content:center;}
+
+  .upcoming-panel-title{font-size:15px;}
+  .upcoming-item{grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:3px 8px;padding:11px 12px;}
+  .upcoming-name{font-size:14px;}
+  .upcoming-lunar{grid-column:2;grid-row:1;text-align:right;}
+  .upcoming-solar{grid-column:1;grid-row:2;text-align:left;}
+  .upcoming-days{grid-column:2;grid-row:2;text-align:right;}
+
+  .month-header{padding:11px 14px;}
+  .month-name{font-size:16px;}
+
+  /* Entry: 2 cột (không có delete) */
+  .entry-row{grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:3px 8px;padding:11px 12px;}
+  .entry-name{font-size:14px;}
+  .entry-lunar{grid-column:2;grid-row:1;text-align:right;}
+  .entry-solar{grid-column:1;grid-row:2;text-align:left;}
+
+  /* Tab form */
+  .add-section{margin-top:24px;}
+  .tab-panel{padding:16px 12px 16px;}
+  .tab-btn{font-size:13px;padding:11px 6px;}
+  .form-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .fg-name{grid-column:1/-1;}
+  .fg-note{grid-column:1/-1;}
+  .fg-submit{grid-column:1/-1;}
+  .btn-add{width:100%;height:44px;}
+
+  /* Back home btn */
+  .btn-back-home{bottom:12px;right:12px;font-size:13px;padding:0 14px;height:38px;}
+
+  .toast{bottom:0;left:0;right:0;border-radius:0;text-align:center;padding:14px 16px;}
+  footer{padding:16px 12px 16px;}
+  .footer-inner{font-size:12px;gap:6px;}
+  .page-overlay-inner{padding:18px 12px 50px;}
+
+  /* Edit table mobile adjustments */
+  .edit-table th:nth-child(1),.edit-table td:nth-child(1){min-width:100px;}
+  .edit-table th:nth-child(2),.edit-table td:nth-child(2){width:50px;}
+  .edit-table th:nth-child(3),.edit-table td:nth-child(3){width:38px;}
+  .edit-table td:nth-child(3) input{width:30px;padding:4px 2px;text-align:center;}
+  .edit-table th:nth-child(4),.edit-table td:nth-child(4){width:54px;}
+  .edit-table td:nth-child(4) select{width:50px;padding-right:14px;}
+  .edit-table th:nth-child(5),.edit-table td:nth-child(5){min-width:60px;}
+  .edit-table th:nth-child(6),.edit-table td:nth-child(6){width:56px;}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<header>
+  <button class="btn-darkmode" id="btn-dark" onclick="toggleDark()" title="Giao diện sáng/tối">🌙</button>
+  <div class="header-ornament">❧ ❧ ❧</div>
+  <h1>Lịch Giỗ Dòng Họ</h1>
+  <p class="subtitle">Lưu giữ ký ức — Tưởng nhớ tổ tiên &amp; người thân</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div> Cúng (trong nhà)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2c5f8a"></div> Gửi (họ hàng)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#5a7a5a"></div> Nhớ ngày</div>
+</div>
+
+<div class="controls">
+  <input type="search" class="search-box" id="search-inp" placeholder="Tìm kiếm theo tên…" oninput="renderAll()">
+  <select class="filter-month" id="filter-month" onchange="renderAll()">
+    <option value="">Tất cả các tháng</option>
+    <option value="1">Tháng 1</option><option value="2">Tháng 2</option>
+    <option value="3">Tháng 3</option><option value="4">Tháng 4</option>
+    <option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+    <option value="7">Tháng 7</option><option value="8">Tháng 8</option>
+    <option value="9">Tháng 9</option><option value="10">Tháng 10</option>
+    <option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+  </select>
+  <button class="ctrl-btn btn-add-goto" onclick="scrollToAdd()">🕯️ Thêm ngày giỗ mới</button>
+  <button class="ctrl-btn btn-ics" onclick="exportICS()">📅 Xuất lịch nhắc nhở</button>
+  <button class="ctrl-btn btn-hdsd" onclick="showHDSD()">📖 HDSD lịch nhắc nhở</button>
+</div>
+
+<div class="upcoming-panel">
+  <div class="upcoming-panel-header">
+    <span class="upcoming-panel-title">🕯️ Lịch giỗ trong 30 ngày tới</span>
+    <span class="upcoming-panel-count" id="upcoming-count"></span>
+  </div>
+  <div class="upcoming-list" id="upcoming-list"></div>
+</div>
+
+<div id="calendar"></div>
+
+<!-- Add / Edit tabs -->
+<div class="add-section" id="add-section">
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-add-btn" onclick="switchTab('add')">🕯️ Thêm ngày giỗ mới</button>
+    <button class="tab-btn" id="tab-edit-btn" onclick="switchTab('edit')">✏️ Sửa dữ liệu</button>
+  </div>
+
+  <!-- Tab Thêm -->
+  <div class="tab-panel active" id="tab-add">
+    <div class="form-grid">
+      <div class="form-group fg-name">
+        <label>Tên người</label>
+        <input type="text" id="inp-name" placeholder="Bà nội, Chú Năm…" maxlength="80" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Loại</label>
+        <select id="inp-cat">
+          <option value="cung">Cúng</option>
+          <option value="gui">Gửi</option>
+          <option value="nho">Nhớ ngày</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ngày âm lịch</label>
+        <input type="number" id="inp-day" min="1" max="30" placeholder="1–30">
+      </div>
+      <div class="form-group">
+        <label>Tháng âm lịch</label>
+        <select id="inp-month">
+          <option value="">-- Chọn tháng --</option>
+          <option value="1">Tháng 1</option><option value="2">Tháng 2</option>
+          <option value="3">Tháng 3</option><option value="4">Tháng 4</option>
+          <option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+          <option value="7">Tháng 7</option><option value="8">Tháng 8</option>
+          <option value="9">Tháng 9</option><option value="10">Tháng 10</option>
+          <option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+        </select>
+      </div>
+      <div class="form-group fg-note">
+        <label>Ghi chú (tùy chọn)</label>
+        <input type="text" id="inp-note" placeholder="Gửi chị Hắt…" maxlength="120" autocomplete="off">
+      </div>
+      <div class="fg-submit">
+        <button class="btn-add" onclick="addEntry()">🕯️ Thêm vào</button>
+      </div>
+    </div>
+    <div class="solar-preview" id="solar-preview">💡 Nhập ngày &amp; chọn tháng âm lịch để xem ngày dương lịch tương ứng năm nay</div>
+  </div>
+
+  <!-- Tab Sửa — PIN protected -->
+  <div class="tab-panel" id="tab-edit">
+    <div id="pin-overlay" class="pin-overlay">
+      <p>🔒 Nhập mã PIN để chỉnh sửa dữ liệu</p>
+      <div class="pin-row">
+        <input type="password" class="pin-input" id="pin-input" maxlength="6" placeholder="••••" inputmode="numeric" autocomplete="off">
+        <button class="btn-pin-ok" onclick="checkPin()">Xác nhận</button>
+      </div>
+      <div class="pin-error" id="pin-error"></div>
+    </div>
+    <div id="edit-content" style="display:none">
+      <div class="edit-search-wrap">
+        <input type="search" id="edit-search" class="edit-search-box" placeholder="🔍 Tìm theo tên, ghi chú…" oninput="filterEditTable()" autocomplete="off">
+      </div>
+      <div class="edit-table-wrap">
+        <table class="edit-table" id="edit-table">
+          <thead><tr>
+            <th>Tên người</th>
+            <th style="width:60px">Loại</th>
+            <th style="width:46px">Ngày</th>
+            <th style="width:72px">Tháng</th>
+            <th>Ghi chú</th>
+            <th style="width:60px;text-align:center">Thao tác</th>
+          </tr></thead>
+          <tbody id="edit-tbody"></tbody>
+        </table>
+      </div>
+      <div class="edit-actions">
+        <button class="btn-lock-edit" onclick="lockEdit()">🔒 Khoá lại</button>
+        <button class="btn-save-all" onclick="saveEdits()">💾 Lưu tất cả</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .wrapper -->
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-ornament">❧</span>
+    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.3.3</span>
+    <span class="footer-ornament">❧</span>
+  </div>
+</footer>
+
+<button class="btn-back-home" id="btn-back-home" onclick="scrollToTop()">↑ Về đầu trang</button>
+
+<div class="toast" id="toast"></div>
+
+<!-- HDSD full-screen overlay -->
+<div class="page-overlay" id="hdsd-overlay">
+  <div class="page-overlay-inner">
+    <div class="page-overlay-header">
+      <button class="btn-back" onclick="hideHDSD()">← Quay lại</button>
+      <div class="page-overlay-title">📲 Hướng dẫn sử dụng lịch nhắc nhở</div>
+    </div>
+    <div class="hdsd">
+      <p>Sau khi bấm <strong>📅 Xuất lịch nhắc nhở (.ics)</strong>, bạn tải về file <code>.ics</code> — định dạng lịch chuẩn quốc tế dùng được trên mọi thiết bị.</p>
+      <div class="tip">
+        💡 <strong>Khuyến nghị:</strong> Tạo một <em>lịch riêng</em> mang tên "Lịch Giỗ Dòng Họ" thay vì nhập vào lịch mặc định — để sau này có thể bật/tắt hoặc xoá toàn bộ mà không ảnh hưởng đến lịch cá nhân.
+      </div>
+      <hr>
+      <div class="device-block">
+        <h3>🍎 iPhone / iPad (iOS &amp; iPadOS)</h3>
+        <p class="tip" style="margin-bottom:10px">📥 <strong>File .ics lưu ở đâu?</strong> Safari lưu vào <strong>Tệp (Files) → Đã tải xuống</strong>. Chrome/Firefox lưu vào <em>Tệp → Trên iPhone này → [Tên trình duyệt]</em>. Kéo thanh thông báo xuống để thấy "Đã tải xong".</p>
+        <p><strong>Cách 1 — Ứng dụng Tệp (dễ nhất):</strong></p>
+        <ol>
+          <li>Mở app <strong>Tệp (Files)</strong> → thư mục <strong>Đã tải xuống</strong> → tìm file <code>Lich_gio.ics</code></li>
+          <li>Nhấn vào file → iOS hỏi "Thêm tất cả X sự kiện?" → nhấn <strong>Thêm</strong></li>
+          <li>Chọn lịch → <strong>Thêm</strong></li>
+        </ol>
+        <p style="margin-top:10px"><strong>Cách 2 — Qua email:</strong> Gửi file <code>.ics</code> vào email, mở mail → nhấn file đính kèm → <strong>Thêm tất cả</strong>.</p>
+        <p style="margin-top:8px" class="warn">⚠ Safari trên iPhone không mở file .ics trực tiếp — dùng Files hoặc email.</p>
+        <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Mở app <strong>Lịch</strong> → nhấn tab <em>Lịch</em> (góc dưới cùng) → <strong>Thêm lịch</strong> → đặt tên "Lịch Giỗ Dòng Họ" → khi nhập .ics, chọn lịch này.</p>
+      </div>
+      <div class="device-block">
+        <h3>🤖 Android</h3>
+        <p><strong>Cách 1 — Google Calendar trên máy tính (khuyến nghị):</strong></p>
+        <ol>
+          <li>Mở <strong>calendar.google.com</strong> trên trình duyệt</li>
+          <li>⚙ Cài đặt → <strong>Nhập &amp; xuất → Nhập</strong></li>
+          <li>Chọn file <code>.ics</code> → chọn lịch → <strong>Nhập</strong></li>
+          <li>Lịch tự đồng bộ về điện thoại qua tài khoản Google</li>
+        </ol>
+        <p class="tip" style="margin:10px 0 6px">📥 <strong>File .ics được lưu ở đâu?</strong> Chrome Android tự lưu vào <strong>Tải xuống</strong>. Mở app <strong>Quản lý tệp</strong> (hoặc <strong>File Manager / Tệp của tôi</strong>) → <em>Tải xuống</em> → tìm file <code>Lich_gio.ics</code>. Hoặc kéo thanh thông báo xuống → nhấn "Đã tải xong" để mở ngay.</p>
+        <p style="margin-top:10px"><strong>Cách 2 — Trực tiếp trên điện thoại:</strong> Google Calendar → ☰ → <strong>Cài đặt → Nhập sự kiện</strong> → chọn file <code>.ics</code> trong thư mục <strong>Tải xuống</strong>.</p>
+        <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Trong Google Lịch → nhấn <strong>Lịch khác → Tạo lịch mới</strong> → đặt tên "Lịch Giỗ Dòng Họ" → khi nhập .ics chọn lịch này.</p>
+      </div>
+      <hr>
+      <div class="device-block">
+        <h3>📱 Tạo shortcut trên điện thoại / máy tính bảng</h3>
+        <p>Thêm link GitHub Pages vào màn hình chính để mở nhanh như một ứng dụng:</p>
+        <p style="margin-top:12px"><strong>🍎 iPhone / iPad (Safari):</strong></p>
+        <ol>
+          <li>Mở link GitHub Pages bằng <strong>Safari</strong></li>
+          <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
+          <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
+          <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
+        </ol>
+        <p style="margin-top:12px"><strong>🤖 Android (Chrome):</strong></p>
+        <ol>
+          <li>Mở link GitHub Pages bằng <strong>Chrome</strong></li>
+          <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
+          <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
+          <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện trên màn hình</li>
+        </ol>
+        <p style="margin-top:12px"><strong>🤖 Android (Samsung Internet):</strong></p>
+        <ol>
+          <li>Mở link GitHub Pages</li>
+          <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
+        </ol>
+        <p style="margin-top:8px" class="warn">💡 Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật!</p>
+      </div>
+      <div class="tip" style="margin-top:20px">
+        📅 <strong>Nhắc nhở tự động theo từng loại giỗ:</strong><br>
+        • <strong>Cúng</strong>: nhắc trước <strong>15 ngày, 7 ngày và 3 ngày</strong><br>
+        • <strong>Gửi</strong>: nhắc trước <strong>3 ngày và 1 ngày</strong><br>
+        • <strong>Nhớ ngày</strong>: nhắc trước <strong>1 ngày</strong><br><br>
+        File <code>.ics</code> xuất cả năm hiện tại lẫn năm sau để không bỏ lỡ ngày gần nhất.
+      </div>
+      <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);">
+        <button class="btn-back" onclick="hideHDSD()" style="padding:0 28px;height:44px;font-size:var(--fs-md);">🏠 Về trang chủ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// [SEC] BẢO MẬT
+// ════════════════════════════════════════════
+const APP_VERSION='1.3.3';
+
+// [SEC-1] Escape HTML — ngăn XSS
+function esc(s){
+  if(s==null)return'';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// [SEC-3] Escape ICS — ngăn ICS injection (RFC 5545)
+function escICS(s){
+  if(s==null)return'';
+  return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,')
+    .replace(/\r?\n/g,'\\n').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'');
+}
+// [SEC-PIN] PIN hash — djb2, KHÔNG lưu plain text
+// PIN mặc định '1234' → hash 2090756197
+// Để đổi: thay PIN_HASH = djb2('pinMới') — chạy trong console
+const PIN_HASH=2088290703;
+function djb2(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h)+s.charCodeAt(i)|0;return h>>>0;}
+
+// ════════════════════════════════════════════
+// LUNAR → SOLAR (Hồ Ngọc Đức — 100% offline)
+// ════════════════════════════════════════════
+function lunarToSolar(lunarDay,lunarMonth,lunarYear){
+  function INT(d){return Math.floor(d);}
+  function jdFromDate(dd,mm,yy){var a=INT((14-mm)/12),y=yy+4800-a,m=mm+12*a-3;var jd=dd+INT((153*m+2)/5)+y*365+INT(y/4)-INT(y/100)+INT(y/400)-32045;if(jd<2299161)jd=dd+INT((153*m+2)/5)+y*365+INT(y/4)-32083;return jd;}
+  function jdToDate(jd){var a,b,c,d,e,m;if(jd>2299160){a=jd+32044;b=INT((4*a+3)/146097);c=a-INT(146097*b/4);}else{b=0;c=jd+32082;}d=INT((4*c+3)/1461);e=c-INT(1461*d/4);m=INT((5*e+2)/153);return[e-INT((153*m+2)/5)+1,m+3-12*INT(m/10),100*b+d-4800+INT(m/10)];}
+  function newMoon(k){var T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180;var Jd1=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;Jd1+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);var M=(359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3)*dr;var Mpr=(306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3)*dr;var F=(21.2964+390.67050646*k-0.0016528*T2-0.00000239*T3)*dr;var C1=(0.1734-0.000393*T)*Math.sin(M)+0.0021*Math.sin(2*M);C1-=0.4068*Math.sin(Mpr)-0.0161*Math.sin(2*Mpr)+0.0004*Math.sin(3*Mpr);C1+=0.0104*Math.sin(2*F)-0.0051*Math.sin(M+Mpr)-0.0074*Math.sin(M-Mpr);C1+=0.0004*Math.sin(2*F+M)-0.0004*Math.sin(2*F-M)-0.0006*Math.sin(2*F+Mpr);C1+=0.0010*Math.sin(2*F-Mpr)+0.0005*Math.sin(M+2*Mpr);return Jd1+C1+65/86400;}
+  function sunLong(jdn){var T=(jdn-2451545)/36525,T2=T*T,dr=Math.PI/180;var L0=280.46646+36000.76983*T+0.0003032*T2;while(L0>360)L0-=360;while(L0<0)L0+=360;var M=(357.52911+35999.05029*T-0.0001537*T2)*dr;var C=(1.914602-0.004817*T-0.000014*T2)*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M);var th=(L0+C)*dr,om=(125.04-1934.136*T)*dr;var lam=th-0.00569*dr-0.00478*Math.sin(om)*dr;var ls=lam/dr;while(ls>360)ls-=360;while(ls<0)ls+=360;return ls;}
+  function getSL(dn,tz){return INT(sunLong(dn-0.5-tz/24)/30);}
+  function getNM(k,tz){return INT(newMoon(k)+0.5+tz/24);}
+  function getLM11(yy,tz){var off=jdFromDate(31,12,yy)-2415021,k=INT(off/29.530588853);var nm=getNM(k,tz);if(getSL(nm,tz)>=9)nm=getNM(k-1,tz);return nm;}
+  function getLeap(a11,tz){var k=INT((a11-2415021.076998695)/29.530588853+0.5),last=0,i=1,arc=getSL(getNM(k+i,tz),tz);do{last=arc;i++;arc=getSL(getNM(k+i,tz),tz);}while(arc!=last&&i<14);return i-1;}
+  var tz=7,yr=lunarYear||new Date().getFullYear();
+  var a11=getLM11(yr-1,tz),b11=getLM11(yr,tz);
+  var k=INT(0.5+(a11-2415021.076998695)/29.530588853);
+  var off=lunarMonth-11;if(off<0)off+=12;
+  var leapOff=0;
+  if(b11-a11>365)leapOff=getLeap(a11,tz);
+  if(leapOff!==0&&leapOff<=off)off++;
+  return jdToDate(getNM(k+off,tz)+lunarDay-1);
+}
+function formatSolar(d,m,y){return`${p2(d)}/${p2(m)}/${y}`;}
+function p2(n){return String(n).padStart(2,'0');}
+
+// ════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════
+const CAT_LABELS={cung:'Cúng',gui:'Gửi',nho:'Nhớ ngày'};
+const CAT_VALID=new Set(['cung','gui','nho']);
+const STORAGE_KEY='ngay_gio_ho_le_v2';
+const MN=['','Tháng Giêng','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Chạp'];
+
+const DD=[
+  {id:1,month:1,cat:'cung',name:'Bà nội',day:11,note:''},
+  {id:2,month:1,cat:'gui',name:'Bố vợ',day:14,note:''},
+  {id:3,month:1,cat:'gui',name:'Ông Thược',day:16,note:''},
+  {id:4,month:1,cat:'nho',name:'Tổ Tuấn',day:4,note:''},
+  {id:5,month:1,cat:'nho',name:'Cụ bà đẻ ra Bác Điền',day:21,note:''},
+  {id:6,month:1,cat:'nho',name:'Bá Nhớn',day:23,note:''},
+  {id:7,month:1,cat:'nho',name:'Chú Nhai',day:25,note:''},
+  {id:8,month:2,cat:'gui',name:'Cụ Ông đẻ ra Bà Choẹt',day:9,note:'Gửi Bá Rụt'},
+  {id:9,month:2,cat:'nho',name:'Bố Bác Chài',day:13,note:''},
+  {id:10,month:2,cat:'nho',name:'Cụ Ông đẻ ra Bác Điền',day:13,note:''},
+  {id:11,month:2,cat:'nho',name:'Bác Hiếu',day:22,note:''},
+  {id:12,month:2,cat:'nho',name:'Lê Thị Quế Hoa Làng',day:6,note:''},
+  {id:13,month:2,cat:'nho',name:'Anh Tịch',day:13,note:'Bính Thân'},
+  {id:14,month:3,cat:'nho',name:'Bác Thuận',day:2,note:''},
+  {id:15,month:3,cat:'nho',name:'Tinh Tuyết Hoa Làng',day:3,note:''},
+  {id:16,month:3,cat:'nho',name:'Cụ bà đẻ ra bà nội',day:7,note:''},
+  {id:17,month:4,cat:'cung',name:'Bố',day:5,note:''},
+  {id:18,month:4,cat:'cung',name:'Ông nội',day:8,note:''},
+  {id:19,month:4,cat:'gui',name:'Cụ Ông đẻ Ông Hạo',day:14,note:''},
+  {id:20,month:4,cat:'gui',name:'Tổ Thập',day:16,note:'Gửi Chị Hắt'},
+  {id:21,month:4,cat:'nho',name:'Tổ Thuận',day:21,note:''},
+  {id:22,month:5,cat:'nho',name:'Bác Trụ',day:13,note:''},
+  {id:23,month:5,cat:'nho',name:'Bá Vin',day:15,note:''},
+  {id:24,month:5,cat:'nho',name:'Bá Tý',day:18,note:''},
+  {id:25,month:5,cat:'nho',name:'Em Ngoan',day:20,note:''},
+  {id:26,month:5,cat:'nho',name:'Em Ngọc',day:23,note:''},
+  {id:27,month:6,cat:'gui',name:'Cụ Ông đẻ ra Ông Huyến',day:17,note:''},
+  {id:28,month:6,cat:'gui',name:'Ông Huyến',day:23,note:'Gửi Bá Tỉu'},
+  {id:29,month:6,cat:'nho',name:'Bá Xè',day:2,note:''},
+  {id:30,month:6,cat:'nho',name:'Bác Vân',day:8,note:''},
+  {id:31,month:6,cat:'nho',name:'Bác Chài',day:11,note:''},
+  {id:32,month:6,cat:'nho',name:'Anh Dông',day:15,note:'Bính Thân'},
+  {id:33,month:6,cat:'nho',name:'Tổ Bình',day:26,note:''},
+  {id:34,month:7,cat:'gui',name:'Tổ Châu',day:23,note:'Gửi Chị Hắt'},
+  {id:35,month:9,cat:'nho',name:'Anh Tiến',day:1,note:''},
+  {id:36,month:9,cat:'nho',name:'Tổ Khanh',day:9,note:''},
+  {id:37,month:9,cat:'nho',name:'Cô Mắn',day:16,note:''},
+  {id:38,month:10,cat:'gui',name:'Cụ Bà đẻ ra Ông Hạo',day:13,note:''},
+  {id:39,month:10,cat:'gui',name:'Cụ Bà đẻ ra Ông Thược',day:22,note:''},
+  {id:40,month:10,cat:'nho',name:'Bác Điền',day:6,note:''},
+  {id:41,month:10,cat:'nho',name:'Bố Bác Tiện',day:28,note:''},
+  {id:42,month:10,cat:'nho',name:'Bác Tiện',day:29,note:''},
+  {id:43,month:11,cat:'cung',name:'Mẹ',day:18,note:''},
+  {id:44,month:11,cat:'gui',name:'Bà Đậy',day:2,note:''},
+  {id:45,month:11,cat:'gui',name:'Bà Choẹt',day:20,note:''},
+  {id:46,month:11,cat:'nho',name:'Bác Hoén',day:10,note:''},
+  {id:47,month:11,cat:'nho',name:'Anh Viên',day:28,note:''},
+  {id:48,month:12,cat:'gui',name:'Ông Hạo',day:26,note:''},
+  {id:49,month:12,cat:'nho',name:'Tổ Nhất',day:13,note:''},
+  {id:50,month:12,cat:'nho',name:'Bá Mít',day:16,note:'Bính Thân'},
+  {id:51,month:12,cat:'nho',name:'Lê Thị Long Hoa Làng',day:13,note:''},
+];
+
+// [SEC-5] Validate record
+function validateRecord(item){
+  if(!item||typeof item!=='object')return null;
+  const id=Number(item.id),month=Number(item.month),day=Number(item.day);
+  const cat=String(item.cat||''),name=String(item.name||'').slice(0,80).trim(),note=String(item.note||'').slice(0,120).trim();
+  if(!Number.isInteger(id)||id<1)return null;
+  if(!Number.isInteger(month)||month<1||month>12)return null;
+  if(!Number.isInteger(day)||day<1||day>30)return null;
+  if(!CAT_VALID.has(cat))return null;
+  if(!name)return null;
+  return{id,month,cat,name,day,note};
+}
+function loadData(){
+  try{
+    const s=localStorage.getItem(STORAGE_KEY);
+    if(!s)return JSON.parse(JSON.stringify(DD));
+    const p=JSON.parse(s);
+    if(!Array.isArray(p))return JSON.parse(JSON.stringify(DD));
+    const v=p.map(validateRecord).filter(Boolean);
+    return v.length?v:JSON.parse(JSON.stringify(DD));
+  }catch(e){return JSON.parse(JSON.stringify(DD));}
+}
+function saveData(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}}
+
+let data=loadData();
+let nextId=Math.max(...data.map(x=>x.id),0)+1;
+
+// ════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════
+function getSolar(item){try{const[d,m,y]=lunarToSolar(item.day,item.month,new Date().getFullYear());return formatSolar(d,m,y);}catch(e){return'—';}}
+function getSolarDt(item,yr){try{const[d,m,y]=lunarToSolar(item.day,item.month,yr);return new Date(y,m-1,d);}catch(e){return null;}}
+function getDaysUntil(item){
+  try{
+    const today=new Date();today.setHours(0,0,0,0);
+    const yr=today.getFullYear();
+    let dt=getSolarDt(item,yr);
+    if(!dt||dt<today)dt=getSolarDt(item,yr+1);
+    if(!dt)return 999;
+    return Math.round((dt-today)/(1000*60*60*24));
+  }catch(e){return 999;}
+}
+// [SEC-2] Toast — textContent only, no innerHTML
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════
+function renderUpcoming(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const list=data.map(item=>({item,days:getDaysUntil(item)})).filter(x=>x.days<=30).sort((a,b)=>a.days-b.days);
+  document.getElementById('upcoming-count').textContent=list.length?`${list.length} ngày giỗ`:'';
+  const el=document.getElementById('upcoming-list');
+  if(!list.length){el.innerHTML='<div class="upcoming-empty">Không có ngày giỗ nào trong 30 ngày tới.</div>';return;}
+  el.innerHTML=list.map(({item,days})=>{
+    const solar=getSolar(item);
+    let txt,cls;
+    if(days===0){txt='Hôm nay';cls='days-today';}
+    else if(days<=7){txt=`${days} ngày`;cls='days-near';}
+    else{txt=`${days} ngày`;cls='days-far';}
+    return`<div class="upcoming-item">
+      <div><span class="upcoming-name">${esc(item.name)}</span><span class="upcoming-cat-tag tag-${esc(item.cat)}">${esc(CAT_LABELS[item.cat])}</span>${item.note?`<div class="entry-note">${esc(item.note)}</div>`:''}</div>
+      <div class="upcoming-lunar">${p2(item.day)}/${p2(item.month)} âm</div>
+      <div class="upcoming-solar">${esc(solar)}</div>
+      <div class="upcoming-days ${cls}">${esc(txt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAll(){
+  const q=document.getElementById('search-inp').value.toLowerCase();
+  const fm=document.getElementById('filter-month').value;
+  const cal=document.getElementById('calendar');
+  const filtered=data.filter(x=>{
+    if(q&&!x.name.toLowerCase().includes(q)&&!(x.note||'').toLowerCase().includes(q))return false;
+    if(fm&&x.month!=fm)return false;
+    return true;
+  });
+  if(!filtered.length){cal.innerHTML='<div class="no-results">Không tìm thấy kết quả nào.</div>';return;}
+  const months=[...new Set(filtered.map(x=>x.month))].sort((a,b)=>a-b);
+  let html='';
+  months.forEach(month=>{
+    const mi=filtered.filter(x=>x.month===month);
+    html+=`<div class="month-section"><div class="month-header"><span class="month-name">${esc(MN[month])}</span><span class="month-count">${mi.length} ngày giỗ</span></div><div class="month-body">`;
+    ['cung','gui','nho'].forEach(cat=>{
+      const items=mi.filter(x=>x.cat===cat).sort((a,b)=>a.day-b.day);
+      if(!items.length&&!q&&!fm){html+=`<div class="category cat-${cat}"><div class="category-header"><span class="cat-dot"></span>${esc(CAT_LABELS[cat])}</div><div class="empty-cat">Không có</div></div>`;return;}
+      if(!items.length)return;
+      html+=`<div class="category cat-${cat}"><div class="category-header"><span class="cat-dot"></span>${esc(CAT_LABELS[cat])} <small>(${items.length})</small></div><div class="entry-list">`;
+      items.forEach(item=>{
+        const solar=getSolar(item),days=getDaysUntil(item),soon=days<=30;
+        // [SEC-1] id là số nguyên, không inject chuỗi người dùng vào onclick
+        html+=`<div class="entry-row${soon?' upcoming-soon':''}">
+          <div><div class="entry-name">${esc(item.name)}${soon?`<span class="days-badge">${days===0?'Hôm nay':days+' ngày'}</span>`:''}</div>${item.note?`<div class="entry-note">${esc(item.note)}</div>`:''}</div>
+          <div class="entry-lunar">${p2(item.day)}/${p2(item.month)} âm</div>
+          <div class="entry-solar">${esc(solar)}</div>
+        </div>`;
+      });
+      html+=`</div></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  cal.innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+// ADD / DELETE
+// ════════════════════════════════════════════
+function addEntry(){
+  const name=document.getElementById('inp-name').value.trim().slice(0,80);
+  const cat=document.getElementById('inp-cat').value;
+  const day=parseInt(document.getElementById('inp-day').value);
+  const month=parseInt(document.getElementById('inp-month').value);
+  const note=document.getElementById('inp-note').value.trim().slice(0,120);
+  if(!name){showToast('⚠ Vui lòng nhập tên người.');return;}
+  if(!day||day<1||day>30){showToast('⚠ Ngày âm lịch từ 1–30.');return;}
+  if(!month||month<1||month>12){showToast('⚠ Vui lòng chọn tháng âm lịch.');return;}
+  if(!CAT_VALID.has(cat)){showToast('⚠ Loại không hợp lệ.');return;}
+  data.push({id:nextId++,month,cat,name,day,note});
+  saveData(data);
+  ['inp-name','inp-day','inp-month','inp-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('solar-preview').textContent='💡 Nhập ngày & chọn tháng âm lịch để xem ngày dương lịch tương ứng năm nay';
+  renderUpcoming();renderAll();
+  showToast(`✓ Đã thêm: ${name}`);
+}
+
+function deleteEntry(id){
+  const numId=parseInt(id);
+  const item=data.find(x=>x.id===numId);
+  if(!item||!confirm(`Xóa ngày giỗ của "${item.name}"?`))return;
+  data=data.filter(x=>x.id!==numId);
+  saveData(data);renderUpcoming();renderAll();
+  showToast(`Đã xóa: ${item.name}`);
+}
+
+function scrollToAdd(){
+  document.getElementById('add-section').scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>document.getElementById('inp-name').focus(),600);
+}
+
+function updatePreview(){
+  const d=parseInt(document.getElementById('inp-day').value);
+  const m=parseInt(document.getElementById('inp-month').value);
+  const p=document.getElementById('solar-preview');
+  if(d>=1&&d<=30&&m>=1&&m<=12){
+    try{const[sd,sm,sy]=lunarToSolar(d,m,new Date().getFullYear());p.textContent=`→ Dương lịch năm nay: ${formatSolar(sd,sm,sy)}`;}
+    catch(e){p.textContent='Không thể quy đổi';}
+  }else{p.textContent='💡 Nhập ngày & chọn tháng âm lịch để xem ngày dương lịch tương ứng năm nay';}
+}
+document.getElementById('inp-day').addEventListener('input',updatePreview);
+document.getElementById('inp-month').addEventListener('change',updatePreview);
+
+// ════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════
+function switchTab(tab){
+  // Auto-lock edit when leaving it
+  if(tab!=='edit' && editUnlocked) lockEdit();
+  ['add','edit'].forEach(t=>{
+    document.getElementById(`tab-${t}-btn`).classList.toggle('active',t===tab);
+    document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
+  });
+  const bth=document.getElementById('btn-back-home');
+  if(tab==='edit')setTimeout(()=>{const p=document.getElementById('pin-input');if(p&&!editUnlocked)p.focus();},200);
+}
+function scrollToTop(){
+  // Auto-lock edit tab when going back to top
+  if(editUnlocked) lockEdit();
+  // Switch back to add tab if currently on edit
+  if(document.getElementById('tab-edit').classList.contains('active')) switchTab('add');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════════
+// PIN & EDIT
+// ════════════════════════════════════════════
+let editUnlocked=false,pinAttempts=0,pinBlockUntil=0;
+
+function checkPin(){
+  const now=Date.now();
+  if(now<pinBlockUntil){document.getElementById('pin-error').textContent=`Thử lại sau ${Math.ceil((pinBlockUntil-now)/1000)}s`;return;}
+  const val=document.getElementById('pin-input').value;
+  if(djb2(val)===PIN_HASH){
+    editUnlocked=true;pinAttempts=0;
+    document.getElementById('pin-overlay').style.display='none';
+    document.getElementById('edit-content').style.display='block';
+    renderEditTable();
+    document.getElementById('pin-input').value='';
+    document.getElementById('pin-error').textContent='';
+  }else{
+    pinAttempts++;
+    document.getElementById('pin-input').value='';
+    if(pinAttempts>=5){pinBlockUntil=Date.now()+30000;document.getElementById('pin-error').textContent='Sai 5 lần — khoá 30 giây';}
+    else{document.getElementById('pin-error').textContent=`Sai mã PIN (${pinAttempts}/5 lần)`;}
+  }
+}
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
+
+function lockEdit(){
+  editUnlocked=false;
+  document.getElementById('pin-overlay').style.display='flex';
+  document.getElementById('edit-content').style.display='none';
+  document.getElementById('pin-input').value='';
+  document.getElementById('pin-error').textContent='';
+}
+
+
+function filterEditTable(){
+  const q = document.getElementById('edit-search').value.toLowerCase().trim();
+  document.querySelectorAll('#edit-tbody tr[data-id]').forEach(row => {
+    const name = (row.querySelector('[data-field="name"]')?.value || '').toLowerCase();
+    const note = (row.querySelector('[data-field="note"]')?.value || '').toLowerCase();
+    row.style.display = (!q || name.includes(q) || note.includes(q)) ? '' : 'none';
+  });
+}
+
+function renderEditTable(){
+  // Clear search filter when table is re-rendered
+  const es=document.getElementById('edit-search');if(es)es.value='';
+  const sorted=[...data].sort((a,b)=>a.month-b.month||a.day-b.day);
+  document.getElementById('edit-tbody').innerHTML=sorted.map(item=>`
+    <tr data-id="${Number(item.id)}">
+      <td><input class="edit-td-input" data-field="name" value="${esc(item.name)}" maxlength="80"></td>
+      <td><select class="edit-td-select" data-field="cat">
+        <option value="cung"${item.cat==='cung'?' selected':''}>Cúng</option>
+        <option value="gui"${item.cat==='gui'?' selected':''}>Gửi</option>
+        <option value="nho"${item.cat==='nho'?' selected':''}>Nhớ</option>
+      </select></td>
+      <td><input class="edit-td-input" data-field="day" type="number" min="1" max="30" value="${item.day}" style="width:34px;padding:4px 2px;text-align:center"></td>
+      <td><select class="edit-td-select" data-field="month" style="width:62px;padding-right:18px">
+        ${Array.from({length:12},(_,i)=>`<option value="${i+1}"${item.month===i+1?' selected':''}>T.${i+1}</option>`).join('')}
+      </select></td>
+      <td><input class="edit-td-input" data-field="note" value="${esc(item.note||'')}" maxlength="120"></td>
+      <td><div class="edit-row-actions"><button class="btn-row-save" onclick="saveOneRow(${Number(item.id)})">💾 Lưu</button><button class="btn-row-del" onclick="editDelRow(${Number(item.id)})">🗑 Xóa</button></div></td>
+    </tr>`).join('');
+}
+
+
+// Save a single edited row immediately
+function saveOneRow(id){
+  if(!editUnlocked){showToast('⚠ Chưa xác thực PIN.');return;}
+  const numId=parseInt(id);
+  const row=document.querySelector(`#edit-tbody tr[data-id="${numId}"]`);
+  if(!row){showToast('⚠ Không tìm thấy dòng.');return;}
+  const name=row.querySelector('[data-field="name"]').value.trim().slice(0,80);
+  const cat=row.querySelector('[data-field="cat"]').value;
+  const day=parseInt(row.querySelector('[data-field="day"]').value);
+  const month=parseInt(row.querySelector('[data-field="month"]').value);
+  const note=row.querySelector('[data-field="note"]').value.trim().slice(0,120);
+  const rec=validateRecord({id:numId,name,cat,day,month,note});
+  if(!rec){showToast('⚠ Dữ liệu không hợp lệ.');return;}
+  const idx=data.findIndex(x=>x.id===numId);
+  if(idx>=0){data[idx]=rec;}
+  else{showToast('⚠ Không tìm thấy bản ghi.');return;}
+  saveData(data);renderUpcoming();renderAll();
+  showToast(`✓ Đã lưu: ${name}`);
+}
+
+function editDelRow(id){
+  const numId=parseInt(id);
+  const item=data.find(x=>x.id===numId);
+  if(!item||!confirm(`Xóa "${item.name}"?`))return;
+  data=data.filter(x=>x.id!==numId);
+  saveData(data);renderEditTable();renderUpcoming();renderAll();
+  showToast(`Đã xóa: ${item.name}`);
+}
+
+function saveEdits(){
+  if(!editUnlocked){showToast('⚠ Chưa xác thực PIN.');return;}
+  const rows=document.querySelectorAll('#edit-tbody tr[data-id]');
+  const newData=[];let hasErr=false;
+  rows.forEach(row=>{
+    const id=parseInt(row.dataset.id);
+    const name=row.querySelector('[data-field="name"]').value.trim().slice(0,80);
+    const cat=row.querySelector('[data-field="cat"]').value;
+    const day=parseInt(row.querySelector('[data-field="day"]').value);
+    const month=parseInt(row.querySelector('[data-field="month"]').value);
+    const note=row.querySelector('[data-field="note"]').value.trim().slice(0,120);
+    const rec=validateRecord({id,name,cat,day,month,note});
+    if(rec)newData.push(rec);else hasErr=true;
+  });
+  if(hasErr)showToast('⚠ Một số dòng không hợp lệ, đã bỏ qua.');
+  data=newData;
+  nextId=Math.max(...data.map(x=>x.id),0)+1;
+  saveData(data);renderUpcoming();renderAll();renderEditTable();
+  showToast('✓ Đã lưu tất cả thay đổi.');
+}
+
+// ════════════════════════════════════════════
+// EXPORT ICS
+// ════════════════════════════════════════════
+// Req 6: Nhắc theo loại — Cúng: 15d/7d/3d; Gửi: 3d/1d; Nhớ: 1d
+function buildAlarms(sum,cat){
+  const offsets={cung:['-P15D','-P7D','-P3D'],gui:['-P3D','-P1D'],nho:['-P1D']};
+  const labels={'-P15D':'15 ngày nữa','-P7D':'7 ngày nữa','-P3D':'3 ngày nữa','-P1D':'ngày mai'};
+  return(offsets[cat]||offsets.nho).map(t=>
+    `BEGIN:VALARM\r\nTRIGGER:${t}\r\nACTION:DISPLAY\r\nDESCRIPTION:Nhắc (${labels[t]}): ${sum}\r\nEND:VALARM`
+  ).join('\r\n');
+}
+function exportICS(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const yr=today.getFullYear();const seen=new Set();const events=[];
+  data.forEach(item=>{
+    [yr,yr+1].forEach(y=>{
+      try{
+        const[d,m,ey]=lunarToSolar(item.day,item.month,y);
+        const dt=new Date(ey,m-1,d);if(dt<today)return;
+        const uid=`ngaygio-${item.id}-${y}@hle`;
+        if(seen.has(uid))return;seen.add(uid);
+        const ds=`${ey}${p2(m)}${p2(d)}`;
+        const cat=CAT_LABELS[item.cat]||item.cat;
+        const sum=`Ngày giỗ: ${escICS(item.name)} (${escICS(cat)})`;
+        const desc=`Ngày âm lịch: ${p2(item.day)}/${p2(item.month)}\\nLoại: ${escICS(cat)}${item.note?'\\nGhi chú: '+escICS(item.note):''}\\nHọ Lê`;
+        events.push(
+          `BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTART;VALUE=DATE:${ds}\r\nDTEND;VALUE=DATE:${ds}\r\n`+
+          `SUMMARY:${sum}\r\nDESCRIPTION:${desc}\r\n`+
+          buildAlarms(sum,item.cat)+`\r\nEND:VEVENT`
+        );
+      }catch(e){}
+    });
+  });
+  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Ho Le//NgayGio//VI\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Lịch Giỗ Dòng Họ\r\nX-WR-TIMEZONE:Asia/Ho_Chi_Minh\r\n${events.join('\r\n')}\r\nEND:VCALENDAR`;
+  dlBlob(ics,'text/calendar;charset=utf-8','Lich_gio.ics');
+  showToast(`✓ Đã xuất ${events.length} sự kiện lịch`);
+}
+
+// ════════════════════════════════════════════
+// EXPORT CSV
+// ════════════════════════════════════════════
+function dlBlob(content,type,filename){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════
+// HDSD OVERLAY
+// ════════════════════════════════════════════
+function showHDSD(){document.getElementById('hdsd-overlay').classList.add('visible');document.body.style.overflow='hidden';}
+function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('visible');document.body.style.overflow='';}
+
+// ════════════════════════════════════════════
+// ════════════════════════════════════════════
+// DARK MODE
+// ════════════════════════════════════════════
+function toggleDark(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  document.getElementById('btn-dark').textContent=next==='dark'?'☀️':'🌙';
+  try{localStorage.setItem('ngaygio_theme',next);}catch(e){}
+}
+(function(){
+  try{const t=localStorage.getItem('ngaygio_theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('btn-dark').textContent='☀️';}}catch(e){}
+})();
+
+// ════════════════════════════════════════════
+// SWIPE TO DELETE (mobile UX)
+// ════════════════════════════════════════════
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+
+// Show "Về đầu trang" button when scrolled down (both tabs)
+// Show "Về đầu trang" when scrolled - works on both tabs, both desktop and mobile
+function updateBackBtn(){
+  const bth=document.getElementById('btn-back-home');
+  if(!bth)return;
+  const scrolled=window.scrollY||window.pageYOffset||document.documentElement.scrollTop||0;
+  if(scrolled>120)bth.classList.add('visible');
+  else bth.classList.remove('visible');
+}
+window.addEventListener('scroll',updateBackBtn,{passive:true});
+document.addEventListener('scroll',updateBackBtn,{passive:true});
+// Also trigger on tab switch in case content is already scrolled
+function triggerBackBtnCheck(){setTimeout(updateBackBtn,50);}
+
+renderUpcoming();
+renderAll();
+</script>
+</body>
+</html>
