@@ -1144,6 +1144,23 @@ function triggerBackBtnCheck(){setTimeout(updateBackBtn,50);}
 
 renderUpcoming();
 renderAll();
+  // 1. Load dữ liệu từ localStorage
+    let data = JSON.parse(localStorage.getItem('lichGioData')) || [];
+
+    // 2. [VỊ TRÍ NÀY] Kiểm tra và cập nhật cấu trúc dữ liệu cũ
+    data = data.map(item => {
+        // Kiểm tra nếu thuộc tính mới chưa tồn tại thì thêm vào với giá trị mặc định
+        if (item.ghiChu === undefined) {
+            return { ...item, ghiChu: "" }; // Thêm cột ghiChu
+        }
+        return item;
+    });
+
+    // 3. Sau khi đã sửa xong cấu trúc, lưu lại vào localStorage
+    localStorage.setItem('lichGioData', JSON.stringify(data));
+
+    // 4. Tiếp tục các bước hiển thị dữ liệu lên màn hình
+    renderTable(data);
 </script>
 </body>
 </html>
