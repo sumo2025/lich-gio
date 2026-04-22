@@ -1,7 +1,34 @@
-# 🕯️ Lịch Giỗ Dòng Họ — v1.3.3
+# 🕯️ Lịch Giỗ Dòng Họ — v1.4.2
 
 Ứng dụng web tĩnh lưu giữ và nhắc nhở ngày giỗ theo âm lịch của Họ Lê.  
 Chạy hoàn toàn trên trình duyệt — không cần server, không cần internet.
+
+---
+
+## 🆕 Latest Release — v1.4.2
+
+> *22/04/2026*
+
+### 💾 Sao lưu & Khôi phục dữ liệu
+- **Sao lưu dữ liệu** — xuất toàn bộ danh sách ngày giỗ ra file `.json` để lưu trữ dự phòng. Dùng được khi chuyển sang thiết bị mới hoặc lỡ xóa dữ liệu trình duyệt
+- **Khôi phục dữ liệu** — nạp lại dữ liệu từ file `.json` đã sao lưu, hỗ trợ kéo thả file
+- Cả hai nút có mặt ở mục **Hướng dẫn** và ngay trong tab **Sửa dữ liệu** để tiện thao tác
+
+### 🗑️ Xóa toàn bộ dữ liệu
+- Nút **Xóa toàn bộ dữ liệu** trong tab Sửa dữ liệu (yêu cầu xác thực PIN)
+- Hiện popup cảnh báo và nhắc sao lưu trước khi xóa
+
+### 📋 File hướng dẫn nhập liệu
+- Kèm file **Excel mẫu** (`HuongDan_NhapDuLieu_LichGio.xlsx`) để điền danh sách ngày giỗ theo biểu mẫu rõ ràng — dành cho người không rành công nghệ
+- Gồm 3 sheet: **Hướng dẫn** · **Dữ liệu** (có xác thực ô nhập) · **JSON Mẫu** (để nhờ ChatGPT chuyển đổi sang `.json`)
+
+### 🔄 Tự động cập nhật
+- Ứng dụng tự nhận phiên bản mới khi bạn cập nhật file lên GitHub — không cần xóa lịch sử trình duyệt, không ảnh hưởng dữ liệu đã lưu
+
+### 📱 Hiển thị đúng trên iPhone có tai thỏ
+- Giao diện không còn bị che khuất ở phần trên cùng trên iPhone có notch / Dynamic Island, áp dụng cho cả trang Hướng dẫn
+
+---
 
 ## ✨ Tính năng
 
@@ -9,12 +36,12 @@ Chạy hoàn toàn trên trình duyệt — không cần server, không cần in
 - Bảng **Lịch giỗ 30 ngày tới** — đếm ngược tự động
 - Quy đổi âm lịch → dương lịch hoàn toàn offline (thuật toán Hồ Ngọc Đức)
 - **Tab Thêm ngày giỗ mới** — nhập liệu nhanh
-- **Tab Sửa dữ liệu** — chỉnh sửa/xóa, bảo vệ bằng mã PIN
+- **Tab Sửa dữ liệu** — chỉnh sửa/xóa/xóa tất cả, bảo vệ bằng mã PIN
+- **Sao lưu & Khôi phục dữ liệu** — xuất/nhập file `.json`
 - Xuất **`.ics`** với nhắc nhở thông minh theo từng loại giỗ
-- Xuất **CSV** để lưu trữ / in ấn
-- Nút **HDSD lịch nhắc nhở** — hướng dẫn từng bước nhập .ics vào lịch
+- Mục **Hướng dẫn** — lưu ý dữ liệu, tạo shortcut, cách dùng file lịch nhắc nhở
 - **Dark mode** / Light mode
-- Giao diện responsive: điện thoại, máy tính bảng, PC
+- Giao diện responsive: điện thoại (kể cả tai thỏ), máy tính bảng, PC
 
 ## 📅 Quy tắc nhắc nhở trong file .ics
 
@@ -32,14 +59,21 @@ File `.ics` xuất cho cả năm hiện tại và năm sau.
 
 Thuật toán **Hồ Ngọc Đức** nhúng trực tiếp trong HTML — tính toán ngay trên trình duyệt, xử lý đúng năm nhuận âm lịch, múi giờ UTC+7.
 
+## 💾 Dữ liệu & Sao lưu
+
+- Dữ liệu lưu trong **localStorage** của trình duyệt — không mất khi đóng tab
+- **Không đồng bộ** giữa các thiết bị — mỗi thiết bị lưu riêng
+- **Nên sao lưu định kỳ** bằng nút *💾 Sao lưu dữ liệu* → lưu file `.json` về máy
+- Khi đổi thiết bị hoặc lỡ xóa lịch sử trình duyệt: dùng *📂 Khôi phục dữ liệu* để nạp lại
+
 ## 🚀 Sử dụng
 
 ### GitHub Pages
 1. Fork repo → **Settings → Pages → Branch: main → / (root)** → Save
-2. Truy cập: `https://<tên-tài-khoản>.github.io/<tên-repo>/Ngay_gio_ho_Le.html`
+2. Truy cập: `https://<tên-tài-khoản>.github.io/<tên-repo>/`
 
 ### Offline
-Mở `Ngay_gio_ho_Le.html` bằng bất kỳ trình duyệt nào. Không cần cài đặt gì.
+Mở `index.html` bằng bất kỳ trình duyệt nào. Không cần cài đặt gì.
 
 ## 🔒 Bảo mật & An toàn khi share GitHub
 
@@ -65,7 +99,7 @@ PIN mặc định là **1234**. Để đổi:
 
 ## 📲 Hướng dẫn nhập file `.ics` vào lịch
 
-Nhấn nút **📖 HDSD lịch nhắc nhở** trong ứng dụng để xem hướng dẫn đầy đủ cho từng thiết bị.  
+Nhấn nút **📖 Hướng dẫn** trong ứng dụng để xem hướng dẫn đầy đủ cho từng thiết bị.  
 Tóm tắt nhanh:
 
 ### 🍎 iPhone / iPad
@@ -91,12 +125,6 @@ Kéo file `.ics` vào cửa sổ Calendar, hoặc **Tệp → Nhập…**
 **calendar.google.com** → ⚙ Cài đặt → **Nhập & xuất → Nhập**
 
 > 💡 **Khuyến nghị:** Tạo **lịch riêng** "Lịch Giỗ Dòng Họ" thay vì nhập vào lịch mặc định — để sau này có thể xóa riêng mà không ảnh hưởng lịch cá nhân.
-
-## 💾 Lưu ý dữ liệu
-
-- Lưu trong **localStorage** — không mất khi đóng tab
-- **Không đồng bộ** giữa các thiết bị — mỗi thiết bị lưu riêng
-- Dữ liệu gốc nhúng sẵn trong mảng `DD` trong `<script>`
 
 ## 🛠️ Tùy chỉnh danh sách ngày giỗ
 
