@@ -40,9 +40,8 @@
 body{
   font-family:'Lora',Georgia,serif;
   background:var(--paper);color:var(--ink);min-height:100vh;
-  font-size:var(--fs-base); /* +5% vs 14px base = 14.7px */
+  font-size:var(--fs-base);
   transition:background .3s,color .3s;
-  /* Safe area cho iPhone có tai thỏ / Dynamic Island */
   padding-top:env(safe-area-inset-top);
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right);
@@ -286,18 +285,23 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .edit-td-select:focus{border-color:var(--gold);background-color:var(--card-bg);outline:none;}
 .btn-edit-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:15px;padding:3px 7px;border-radius:4px;transition:color .15s;}
 .btn-edit-del:hover{color:var(--red-light);}
-.edit-actions{margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+.edit-actions{margin-top:14px;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;align-items:center;}
+.edit-actions-left{display:flex;gap:10px;flex-wrap:wrap;}
+.edit-actions-right{display:flex;gap:10px;flex-wrap:wrap;}
 .btn-save-all{padding:9px 20px;background:var(--sage);color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
 .btn-save-all:hover{background:#3d5e3d;}
 .btn-lock-edit{padding:9px 16px;background:var(--muted);color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
 .btn-lock-edit:hover{background:#4a3c30;}
+.btn-delete-all{padding:9px 16px;background:#7a2020;color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.btn-delete-all:hover{background:#a02828;}
+.btn-backup-inline{padding:9px 16px;background:var(--gold);color:white;border:none;border-radius:7px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.btn-backup-inline:hover{background:var(--gold-light);}
 
 /* ── HDSD Full-screen overlay ── */
 .page-overlay{display:none;position:fixed;inset:0;background:var(--paper);z-index:2000;overflow-y:auto;animation:fadeIn .25s ease;}
 .page-overlay.visible{display:block;}
 .page-overlay-inner{
   max-width:780px;margin:0 auto;
-  /* Safe area: thêm padding cho tai thỏ trên overlay full-screen */
   padding:calc(28px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) 60px calc(22px + env(safe-area-inset-left));
 }
 .page-overlay-header{display:flex;align-items:center;gap:14px;margin-bottom:26px;padding-bottom:14px;border-bottom:2px solid var(--border);}
@@ -324,28 +328,69 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 /* ── Backup Modal ── */
 .backup-modal-overlay{
   display:none;position:fixed;inset:0;background:var(--modal-overlay);
-  z-index:4000;align-items:center;justify-content:center;
-  padding:20px;
+  z-index:4000;align-items:center;justify-content:center;padding:20px;
 }
 .backup-modal-overlay.visible{display:flex;}
 .backup-modal-box{
   background:var(--card-bg);border-radius:14px;padding:28px 24px 22px;
   max-width:360px;width:100%;
-  box-shadow:0 8px 40px rgba(0,0,0,.25);
-  animation:slideIn .25s ease;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);animation:slideIn .25s ease;
 }
 .backup-modal-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .backup-modal-icon{font-size:32px;line-height:1;flex-shrink:0;}
 .backup-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--red);}
 .backup-modal-msg{font-size:var(--fs-base);color:var(--muted);line-height:1.75;margin-bottom:20px;text-align:left;}
 .backup-modal-footer{text-align:right;}
-.backup-modal-btn{
-  padding:9px 28px;background:var(--red);color:white;border:none;border-radius:8px;
-  font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;
-}
+.backup-modal-btn{padding:9px 28px;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
 .backup-modal-btn:hover{background:var(--red-light);}
 
-/* ── Edit search ── */
+/* ── Confirm / Restore Modal (dùng chung khung) ── */
+.confirm-modal-overlay{
+  display:none;position:fixed;inset:0;background:var(--modal-overlay);
+  z-index:4000;align-items:center;justify-content:center;padding:20px;
+}
+.confirm-modal-overlay.visible{display:flex;}
+.confirm-modal-box{
+  background:var(--card-bg);border-radius:14px;padding:28px 24px 22px;
+  max-width:400px;width:100%;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);animation:slideIn .25s ease;
+}
+.confirm-modal-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.confirm-modal-icon{font-size:32px;line-height:1;flex-shrink:0;}
+.confirm-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--red);}
+.confirm-modal-msg{font-size:var(--fs-base);color:var(--muted);line-height:1.75;margin-bottom:20px;text-align:left;}
+.confirm-modal-footer{display:flex;gap:10px;justify-content:flex-end;}
+.confirm-modal-cancel{padding:9px 20px;background:var(--muted);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.confirm-modal-cancel:hover{background:#4a3c30;}
+.confirm-modal-ok{padding:9px 20px;background:#7a2020;color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.confirm-modal-ok:hover{background:#a02828;}
+
+/* ── Restore Modal ── */
+.restore-modal-overlay{
+  display:none;position:fixed;inset:0;background:var(--modal-overlay);
+  z-index:4000;align-items:center;justify-content:center;padding:20px;
+}
+.restore-modal-overlay.visible{display:flex;}
+.restore-modal-box{
+  background:var(--card-bg);border-radius:14px;padding:28px 24px 22px;
+  max-width:420px;width:100%;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);animation:slideIn .25s ease;
+}
+.restore-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--red);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.restore-modal-desc{font-size:var(--fs-base);color:var(--muted);line-height:1.7;margin-bottom:18px;text-align:left;}
+.restore-dropzone{
+  border:2px dashed var(--border);border-radius:10px;padding:28px 20px;text-align:center;
+  cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:16px;
+  font-size:var(--fs-base);color:var(--muted);
+}
+.restore-dropzone:hover,.restore-dropzone.dragover{border-color:var(--gold);background:var(--input-bg);}
+.restore-dropzone-icon{font-size:36px;margin-bottom:8px;}
+.restore-file-input{display:none;}
+.restore-modal-footer{display:flex;gap:10px;justify-content:flex-end;}
+.restore-modal-cancel{padding:9px 20px;background:var(--muted);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.restore-modal-cancel:hover{background:#4a3c30;}
+
+
 .edit-search-wrap{margin-bottom:12px;}
 .edit-search-box{
   width:100%;padding:0 12px 0 36px;height:40px;
@@ -580,8 +625,14 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         </table>
       </div>
       <div class="edit-actions">
-        <button class="btn-lock-edit" onclick="lockEdit()">🔒 Khoá lại</button>
-        <button class="btn-save-all" onclick="saveEdits()">💾 Lưu tất cả</button>
+        <div class="edit-actions-left">
+          <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ Xóa toàn bộ dữ liệu</button>
+          <button class="btn-backup-inline" onclick="backupData()">💾 Sao lưu dữ liệu</button>
+        </div>
+        <div class="edit-actions-right">
+          <button class="btn-lock-edit" onclick="lockEdit()">🔒 Khoá lại</button>
+          <button class="btn-save-all" onclick="saveEdits()">💾 Lưu tất cả</button>
+        </div>
       </div>
     </div>
   </div>
@@ -592,7 +643,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.1</span>
+    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.2</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -601,7 +652,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 
 <div class="toast" id="toast"></div>
 
-<!-- Modal thông báo sao lưu thành công -->
+<!-- Modal: Sao lưu thành công -->
 <div class="backup-modal-overlay" id="backup-modal" onclick="closeBackupModal()">
   <div class="backup-modal-box" onclick="event.stopPropagation()">
     <div class="backup-modal-top">
@@ -611,6 +662,37 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
     <p class="backup-modal-msg">Hãy lưu giữ file này thật cẩn thận. Bạn có thể dùng để khôi phục lại toàn bộ dữ liệu ngày giỗ khi chuyển sang thiết bị mới hoặc lỡ tay xóa lịch sử trình duyệt.</p>
     <div class="backup-modal-footer">
       <button onclick="closeBackupModal()" class="backup-modal-btn">Đã hiểu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Xác nhận xóa toàn bộ -->
+<div class="confirm-modal-overlay" id="confirm-delete-modal" onclick="closeConfirmDelete()">
+  <div class="confirm-modal-box" onclick="event.stopPropagation()">
+    <div class="confirm-modal-top">
+      <div class="confirm-modal-icon">⚠️</div>
+      <div class="confirm-modal-title">Xóa toàn bộ dữ liệu?</div>
+    </div>
+    <p class="confirm-modal-msg">Bạn có chắc chắn muốn xóa tất cả dữ liệu không?<br><br>Hãy thực hiện <strong>Sao lưu dữ liệu</strong> trước khi xóa để tránh mất dữ liệu vĩnh viễn nhé.</p>
+    <div class="confirm-modal-footer">
+      <button class="confirm-modal-cancel" onclick="closeConfirmDelete()">Hủy bỏ</button>
+      <button class="confirm-modal-ok" onclick="deleteAllData()">🗑️ Xóa tất cả</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Khôi phục dữ liệu -->
+<div class="restore-modal-overlay" id="restore-modal" onclick="closeRestoreModal()">
+  <div class="restore-modal-box" onclick="event.stopPropagation()">
+    <div class="restore-modal-title">📂 Khôi phục dữ liệu</div>
+    <p class="restore-modal-desc">Chọn file <code>.json</code> đã sao lưu trước đó. Dữ liệu hiện tại sẽ được <strong>thay thế hoàn toàn</strong> bằng dữ liệu từ file.</p>
+    <div class="restore-dropzone" id="restore-dropzone" onclick="document.getElementById('restore-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleRestoreDrop(event)">
+      <div class="restore-dropzone-icon">📁</div>
+      <div>Nhấn để chọn file <code>.json</code><br><span style="font-size:12px">hoặc kéo thả file vào đây</span></div>
+    </div>
+    <input type="file" id="restore-file-input" class="restore-file-input" accept=".json,application/json" onchange="handleRestoreFile(event)">
+    <div class="restore-modal-footer">
+      <button class="restore-modal-cancel" onclick="closeRestoreModal()">Hủy bỏ</button>
     </div>
   </div>
 </div>
@@ -635,8 +717,9 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
           <li>⚠️ <strong>Xoá dữ liệu trình duyệt/đổi trình duyệt</strong> sẽ làm mất toàn bộ dữ liệu đã nhập</li>
         </ul>
         <p style="margin-top:12px">👉 <strong>Khuyến nghị:</strong> Sử dụng <strong>một trình duyệt cố định</strong> trên thiết bị chính. Định kỳ nhấn nút bên dưới để sao lưu dữ liệu dự phòng.</p>
-        <div style="margin-top:16px;text-align:center;">
-          <button onclick="backupData()" style="padding:10px 24px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">💾 Sao lưu dữ liệu</button>
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <button onclick="backupData()" style="padding:10px 20px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">💾 Sao lưu dữ liệu</button>
+          <button onclick="showRestoreModal()" style="padding:10px 20px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">📂 Khôi phục dữ liệu</button>
         </div>
       </div>
 
@@ -729,7 +812,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.1';
+const APP_VERSION='1.4.2';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1192,6 +1275,63 @@ function backupData(){
   }catch(e){showToast('⚠ Không thể xuất dữ liệu.');}
 }
 function closeBackupModal(){document.getElementById('backup-modal').classList.remove('visible');}
+
+// ════════════════════════════════════════════
+// KHÔI PHỤC DỮ LIỆU
+// ════════════════════════════════════════════
+function showRestoreModal(){document.getElementById('restore-modal').classList.add('visible');}
+function closeRestoreModal(){document.getElementById('restore-modal').classList.remove('visible');}
+function handleRestoreDrop(e){
+  e.preventDefault();
+  document.getElementById('restore-dropzone').classList.remove('dragover');
+  const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+  if(file)processRestoreFile(file);
+}
+function handleRestoreFile(e){
+  const file=e.target.files&&e.target.files[0];
+  if(file)processRestoreFile(file);
+  e.target.value='';
+}
+function processRestoreFile(file){
+  if(!file.name.endsWith('.json')&&file.type!=='application/json'){showToast('⚠ Vui lòng chọn file .json');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const obj=JSON.parse(e.target.result);
+      let arr=null;
+      // Hỗ trợ cả format backup {version,data:[...]} lẫn array thuần
+      if(Array.isArray(obj))arr=obj;
+      else if(obj&&Array.isArray(obj.data))arr=obj.data;
+      if(!arr)throw new Error('Định dạng không hợp lệ');
+      const valid=arr.map(validateRecord).filter(Boolean);
+      if(!valid.length)throw new Error('Không có dữ liệu hợp lệ');
+      if(!confirm(`Tìm thấy ${valid.length} bản ghi. Xác nhận khôi phục và thay thế toàn bộ dữ liệu hiện tại?`))return;
+      data=valid;
+      nextId=Math.max(...data.map(x=>x.id),0)+1;
+      saveData(data);renderUpcoming();renderAll();
+      if(typeof renderEditTable==='function')renderEditTable();
+      closeRestoreModal();
+      showToast(`✓ Đã khôi phục ${valid.length} bản ghi`);
+    }catch(err){showToast('⚠ File không hợp lệ: '+err.message);}
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+// ════════════════════════════════════════════
+// XÓA TOÀN BỘ DỮ LIỆU
+// ════════════════════════════════════════════
+function confirmDeleteAll(){
+  if(!editUnlocked){showToast('⚠ Chưa xác thực PIN.');return;}
+  document.getElementById('confirm-delete-modal').classList.add('visible');
+}
+function closeConfirmDelete(){document.getElementById('confirm-delete-modal').classList.remove('visible');}
+function deleteAllData(){
+  closeConfirmDelete();
+  data=[];nextId=1;
+  saveData(data);renderUpcoming();renderAll();
+  if(typeof renderEditTable==='function')renderEditTable();
+  showToast('✓ Đã xóa toàn bộ dữ liệu');
+}
 
 // ════════════════════════════════════════════
 // TỰ ĐỘNG CẬP NHẬT (Service Worker)
