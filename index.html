@@ -390,6 +390,44 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .restore-modal-cancel{padding:9px 20px;background:var(--muted);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
 .restore-modal-cancel:hover{background:#4a3c30;}
 
+/* ── ICS Year-picker Modal ── */
+.ics-modal-overlay{
+  display:none;position:fixed;inset:0;background:var(--modal-overlay);
+  z-index:4000;align-items:center;justify-content:center;padding:20px;
+}
+.ics-modal-overlay.visible{display:flex;}
+.ics-modal-box{
+  background:var(--card-bg);border-radius:14px;padding:28px 24px 22px;
+  max-width:420px;width:100%;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);animation:slideIn .25s ease;
+}
+.ics-modal-top{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+.ics-modal-icon{font-size:32px;line-height:1;flex-shrink:0;}
+.ics-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--blue);}
+.ics-modal-sub{font-size:var(--fs-base);color:var(--muted);line-height:1.6;margin-bottom:18px;text-align:left;}
+.ics-year-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.ics-year-btn{
+  padding:14px 10px;border:2px solid var(--border);border-radius:10px;
+  background:var(--card-bg);color:var(--ink);cursor:pointer;
+  font-family:'Playfair Display',serif;font-size:15px;font-weight:600;
+  transition:border-color .2s,background .2s,color .2s;text-align:center;
+}
+.ics-year-btn:hover{border-color:var(--blue);background:var(--cat-gui-bg);color:var(--blue);}
+.ics-year-btn.selected{border-color:var(--blue);background:var(--blue);color:white;}
+.ics-year-btn .ics-year-label{display:block;font-size:11px;font-family:'Lora',serif;font-weight:400;opacity:.8;margin-top:3px;}
+.ics-warn-box{
+  background:#fff8e7;border-left:4px solid var(--gold);border-radius:6px;
+  padding:12px 14px;margin-bottom:18px;font-size:13px;color:#6b5000;line-height:1.65;
+}
+[data-theme="dark"] .ics-warn-box{background:#2a2010;color:#c8a040;}
+.ics-warn-box strong{color:#8b6000;}
+[data-theme="dark"] .ics-warn-box strong{color:#d4a820;}
+.ics-modal-footer{display:flex;gap:10px;justify-content:flex-end;}
+.ics-modal-cancel{padding:9px 20px;background:var(--muted);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;}
+.ics-modal-cancel:hover{background:#4a3c30;}
+.ics-modal-ok{padding:9px 22px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s,opacity .2s;}
+.ics-modal-ok:hover{background:#1e4a6e;}
+.ics-modal-ok:disabled{opacity:.45;cursor:not-allowed;}
 
 .edit-search-wrap{margin-bottom:12px;}
 .edit-search-box{
@@ -534,7 +572,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
     <option value="11">Tháng 11</option><option value="12">Tháng 12</option>
   </select>
   <button class="ctrl-btn btn-add-goto" onclick="scrollToAdd()">🕯️ Thêm ngày giỗ mới</button>
-  <button class="ctrl-btn btn-ics" onclick="exportICS()">📅 Xuất lịch nhắc nhở</button>
+  <button class="ctrl-btn btn-ics" onclick="showICSModal()">📅 Xuất lịch nhắc nhở</button>
   <button class="ctrl-btn btn-hdsd" onclick="showHDSD()">📖 Hướng dẫn</button>
 </div>
 
@@ -643,7 +681,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.2</span>
+    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.3</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -651,6 +689,42 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <button class="btn-back-home" id="btn-back-home" onclick="scrollToTop()">↑ Về đầu trang</button>
 
 <div class="toast" id="toast"></div>
+
+<!-- Modal: Chọn số năm xuất lịch .ics -->
+<div class="ics-modal-overlay" id="ics-modal" onclick="closeICSModal()">
+  <div class="ics-modal-box" onclick="event.stopPropagation()">
+    <div class="ics-modal-top">
+      <div class="ics-modal-icon">📅</div>
+      <div class="ics-modal-title">Xuất lịch nhắc nhở</div>
+    </div>
+    <p class="ics-modal-sub">Chọn khoảng thời gian cần xuất. File <code>.ics</code> sẽ chứa tất cả ngày giỗ quy đổi sang dương lịch cho từng năm.</p>
+    <div class="ics-year-options">
+      <button class="ics-year-btn" data-years="5" onclick="selectICSYears(5)">
+        5 năm
+        <span class="ics-year-label" id="ics-label-5"></span>
+      </button>
+      <button class="ics-year-btn" data-years="10" onclick="selectICSYears(10)">
+        10 năm
+        <span class="ics-year-label" id="ics-label-10"></span>
+      </button>
+      <button class="ics-year-btn" data-years="15" onclick="selectICSYears(15)">
+        15 năm
+        <span class="ics-year-label" id="ics-label-15"></span>
+      </button>
+      <button class="ics-year-btn" data-years="20" onclick="selectICSYears(20)">
+        20 năm
+        <span class="ics-year-label" id="ics-label-20"></span>
+      </button>
+    </div>
+    <div class="ics-warn-box">
+      ⚠️ <strong>Lưu ý quan trọng:</strong> Nếu bạn đã nhập file lịch này vào Calendar trước đó, hãy <strong>xóa lịch cũ trước</strong> khi nhập file mới để tránh bị trùng lặp sự kiện.
+    </div>
+    <div class="ics-modal-footer">
+      <button class="ics-modal-cancel" onclick="closeICSModal()">Hủy bỏ</button>
+      <button class="ics-modal-ok" id="ics-modal-ok" onclick="doExportICS()" disabled>📥 Xuất file</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal: Sao lưu thành công -->
 <div class="backup-modal-overlay" id="backup-modal" onclick="closeBackupModal()">
@@ -812,7 +886,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.2';
+const APP_VERSION='1.4.3';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1214,7 +1288,7 @@ function saveEdits(){
 // ════════════════════════════════════════════
 // EXPORT ICS
 // ════════════════════════════════════════════
-// Req 6: Nhắc theo loại - Cúng: 15d/7d/3d; Gửi: 3d/1d; Nhớ: 1d
+// Nhắc theo loại - Cúng: 15d/7d/3d; Gửi: 3d/1d; Nhớ: 1d
 function buildAlarms(sum,cat){
   const offsets={cung:['-P15D','-P7D','-P3D'],gui:['-P3D','-P1D'],nho:['-P1D']};
   const labels={'-P15D':'15 ngày nữa','-P7D':'7 ngày nữa','-P3D':'3 ngày nữa','-P1D':'ngày mai'};
@@ -1222,14 +1296,52 @@ function buildAlarms(sum,cat){
     `BEGIN:VALARM\r\nTRIGGER:${t}\r\nACTION:DISPLAY\r\nDESCRIPTION:Nhắc (${labels[t]}): ${sum}\r\nEND:VALARM`
   ).join('\r\n');
 }
-function exportICS(){
+
+let _icsSelectedYears=0;
+
+function showICSModal(){
+  _icsSelectedYears=0;
+  // Cập nhật label năm bắt đầu → năm kết thúc
+  const yr=new Date().getFullYear();
+  [5,10,15,20].forEach(n=>{
+    const el=document.getElementById('ics-label-'+n);
+    if(el)el.textContent=yr+' – '+(yr+n-1);
+  });
+  // Reset trạng thái nút
+  document.querySelectorAll('.ics-year-btn').forEach(b=>b.classList.remove('selected'));
+  const okBtn=document.getElementById('ics-modal-ok');
+  if(okBtn)okBtn.disabled=true;
+  document.getElementById('ics-modal').classList.add('visible');
+}
+
+function selectICSYears(n){
+  _icsSelectedYears=n;
+  document.querySelectorAll('.ics-year-btn').forEach(b=>{
+    b.classList.toggle('selected',parseInt(b.dataset.years)===n);
+  });
+  const okBtn=document.getElementById('ics-modal-ok');
+  if(okBtn)okBtn.disabled=false;
+}
+
+function closeICSModal(){
+  document.getElementById('ics-modal').classList.remove('visible');
+}
+
+function doExportICS(){
+  if(!_icsSelectedYears)return;
+  closeICSModal();
   const today=new Date();today.setHours(0,0,0,0);
-  const yr=today.getFullYear();const seen=new Set();const events=[];
+  const startYr=today.getFullYear();
+  const endYr=startYr+_icsSelectedYears-1;
+  const seen=new Set();const events=[];
+  const years=[];
+  for(let y=startYr;y<=endYr;y++)years.push(y);
   data.forEach(item=>{
-    [yr,yr+1].forEach(y=>{
+    years.forEach(y=>{
       try{
         const[d,m,ey]=lunarToSolar(item.day,item.month,y);
-        const dt=new Date(ey,m-1,d);if(dt<today)return;
+        const dt=new Date(ey,m-1,d);
+        // Không lọc bỏ ngày đã qua — xuất toàn bộ năm được chọn
         const uid=`ngaygio-${item.id}-${y}@hle`;
         if(seen.has(uid))return;seen.add(uid);
         const ds=`${ey}${p2(m)}${p2(d)}`;
@@ -1244,9 +1356,10 @@ function exportICS(){
       }catch(e){}
     });
   });
+  const fname=`Lich_gio_${startYr}-${endYr}.ics`;
   const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Ho Le//NgayGio//VI\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Lịch Giỗ Dòng Họ\r\nX-WR-TIMEZONE:Asia/Ho_Chi_Minh\r\n${events.join('\r\n')}\r\nEND:VCALENDAR`;
-  dlBlob(ics,'text/calendar;charset=utf-8','Lich_gio.ics');
-  showToast(`✓ Đã xuất ${events.length} sự kiện lịch`);
+  dlBlob(ics,'text/calendar;charset=utf-8',fname);
+  showToast(`✓ Đã xuất ${events.length} sự kiện (${startYr}–${endYr})`);
 }
 function dlBlob(content,type,filename){
   const blob=new Blob([content],{type});
