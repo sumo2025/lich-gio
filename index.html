@@ -2,7 +2,7 @@
 <html lang="vi" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; connect-src 'none';">
 <title>Lịch Giỗ Dòng Họ</title>
@@ -408,6 +408,22 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   .edit-table th:nth-child(6),.edit-table td:nth-child(6){width:56px;}
 }
 </style>
+    <!-- ==================== PWA - Ẩn address bar ==================== -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS / Apple -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lịch giỗ dòng họ">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Android / Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Windows (tùy chọn) -->
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <!-- ==================== Kết thúc PWA ==================== -->
 </head>
 <body>
 <div class="wrapper">
