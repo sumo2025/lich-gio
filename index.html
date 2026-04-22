@@ -73,7 +73,7 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 /* ── Controls ── */
 .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:stretch;}
 .search-box{
-  flex:1 1 160px;min-width:0;
+  flex:2 1 260px;min-width:0;
   padding:0 12px 0 36px;height:42px;
   border:1px solid var(--border);border-radius:8px;
   font-family:'Lora',serif;font-size:var(--fs-base);
@@ -457,7 +457,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   </select>
   <button class="ctrl-btn btn-add-goto" onclick="scrollToAdd()">🕯️ Thêm ngày giỗ mới</button>
   <button class="ctrl-btn btn-ics" onclick="exportICS()">📅 Xuất lịch nhắc nhở</button>
-  <button class="ctrl-btn btn-hdsd" onclick="showHDSD()">📖 HDSD lịch nhắc nhở</button>
+  <button class="ctrl-btn btn-hdsd" onclick="showHDSD()">📖 Hướng dẫn</button>
 </div>
 
 <div class="upcoming-panel">
@@ -573,14 +573,48 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   <div class="page-overlay-inner">
     <div class="page-overlay-header">
       <button class="btn-back" onclick="hideHDSD()">← Quay lại</button>
-      <div class="page-overlay-title">📲 Hướng dẫn sử dụng lịch nhắc nhở</div>
+      <div class="page-overlay-title">📖 Hướng dẫn</div>
     </div>
     <div class="hdsd">
+
+      <!-- PHẦN 1: Tạo shortcut -->
+      <h3 style="margin-top:0">📱 Tạo shortcut trên điện thoại / máy tính bảng</h3>
+      <p>Thêm link GitHub Pages vào màn hình chính để mở nhanh như một ứng dụng:</p>
+      <div class="device-block">
+        <h3>🍎 iPhone / iPad (Safari)</h3>
+        <ol>
+          <li>Mở link GitHub Pages bằng <strong>Safari</strong></li>
+          <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
+          <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
+          <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
+        </ol>
+      </div>
+      <div class="device-block">
+        <h3>🤖 Android (Chrome)</h3>
+        <ol>
+          <li>Mở link GitHub Pages bằng <strong>Chrome</strong></li>
+          <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
+          <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
+          <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện trên màn hình</li>
+        </ol>
+      </div>
+      <div class="device-block">
+        <h3>🤖 Android (Samsung Internet)</h3>
+        <ol>
+          <li>Mở link GitHub Pages</li>
+          <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
+        </ol>
+      </div>
+      <p class="warn" style="margin-top:8px">💡 Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật!</p>
+
+      <hr>
+
+      <!-- PHẦN 2: Hướng dẫn sử dụng lịch nhắc nhở -->
+      <h3>📅 Hướng dẫn sử dụng file lịch nhắc nhở</h3>
       <p>Sau khi bấm <strong>📅 Xuất lịch nhắc nhở (.ics)</strong>, bạn tải về file <code>.ics</code> — định dạng lịch chuẩn quốc tế dùng được trên mọi thiết bị.</p>
       <div class="tip">
         💡 <strong>Khuyến nghị:</strong> Tạo một <em>lịch riêng</em> mang tên "Lịch Giỗ Dòng Họ" thay vì nhập vào lịch mặc định — để sau này có thể bật/tắt hoặc xoá toàn bộ mà không ảnh hưởng đến lịch cá nhân.
       </div>
-      <hr>
       <div class="device-block">
         <h3>🍎 iPhone / iPad (iOS &amp; iPadOS)</h3>
         <p class="tip" style="margin-bottom:10px">📥 <strong>File .ics lưu ở đâu?</strong> Safari lưu vào <strong>Tệp (Files) → Đã tải xuống</strong>. Chrome/Firefox lưu vào <em>Tệp → Trên iPhone này → [Tên trình duyệt]</em>. Kéo thanh thông báo xuống để thấy "Đã tải xong".</p>
@@ -607,31 +641,6 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         <p style="margin-top:10px"><strong>Cách 2 — Trực tiếp trên điện thoại:</strong> Google Calendar → ☰ → <strong>Cài đặt → Nhập sự kiện</strong> → chọn file <code>.ics</code> trong thư mục <strong>Tải xuống</strong>.</p>
         <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Trong Google Lịch → nhấn <strong>Lịch khác → Tạo lịch mới</strong> → đặt tên "Lịch Giỗ Dòng Họ" → khi nhập .ics chọn lịch này.</p>
       </div>
-      <hr>
-      <div class="device-block">
-        <h3>📱 Tạo shortcut trên điện thoại / máy tính bảng</h3>
-        <p>Thêm link GitHub Pages vào màn hình chính để mở nhanh như một ứng dụng:</p>
-        <p style="margin-top:12px"><strong>🍎 iPhone / iPad (Safari):</strong></p>
-        <ol>
-          <li>Mở link GitHub Pages bằng <strong>Safari</strong></li>
-          <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
-          <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
-          <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
-        </ol>
-        <p style="margin-top:12px"><strong>🤖 Android (Chrome):</strong></p>
-        <ol>
-          <li>Mở link GitHub Pages bằng <strong>Chrome</strong></li>
-          <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
-          <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
-          <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện trên màn hình</li>
-        </ol>
-        <p style="margin-top:12px"><strong>🤖 Android (Samsung Internet):</strong></p>
-        <ol>
-          <li>Mở link GitHub Pages</li>
-          <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
-        </ol>
-        <p style="margin-top:8px" class="warn">💡 Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật!</p>
-      </div>
       <div class="tip" style="margin-top:20px">
         📅 <strong>Nhắc nhở tự động theo từng loại giỗ:</strong><br>
         • <strong>Cúng</strong>: nhắc trước <strong>15 ngày, 7 ngày và 3 ngày</strong><br>
@@ -639,6 +648,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         • <strong>Nhớ ngày</strong>: nhắc trước <strong>1 ngày</strong><br><br>
         File <code>.ics</code> xuất cả năm hiện tại lẫn năm sau để không bỏ lỡ ngày gần nhất.
       </div>
+
       <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);">
         <button class="btn-back" onclick="hideHDSD()" style="padding:0 28px;height:44px;font-size:var(--fs-md);">🏠 Về trang chủ</button>
       </div>
@@ -1088,10 +1098,6 @@ function exportICS(){
   dlBlob(ics,'text/calendar;charset=utf-8','Lich_gio.ics');
   showToast(`✓ Đã xuất ${events.length} sự kiện lịch`);
 }
-
-// ════════════════════════════════════════════
-// EXPORT CSV
-// ════════════════════════════════════════════
 function dlBlob(content,type,filename){
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
