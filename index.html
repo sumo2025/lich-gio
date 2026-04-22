@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
 <title>Lịch Giỗ Dòng Họ</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%238b1a1a'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='34' font-family='serif'%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E">
@@ -42,6 +42,11 @@ body{
   background:var(--paper);color:var(--ink);min-height:100vh;
   font-size:var(--fs-base); /* +5% vs 14px base = 14.7px */
   transition:background .3s,color .3s;
+  /* Safe area cho iPhone có tai thỏ / Dynamic Island */
+  padding-top:env(safe-area-inset-top);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+  padding-bottom:env(safe-area-inset-bottom);
 }
 body::before{
   content:'';position:fixed;inset:0;
@@ -312,7 +317,29 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 
 
 
-/* ── Edit search ── */
+/* ── Backup Modal ── */
+.backup-modal-overlay{
+  display:none;position:fixed;inset:0;background:var(--modal-overlay);
+  z-index:4000;align-items:center;justify-content:center;
+  padding:20px;
+}
+.backup-modal-overlay.visible{display:flex;}
+.backup-modal-box{
+  background:var(--card-bg);border-radius:14px;padding:32px 28px 24px;
+  max-width:360px;width:100%;text-align:center;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);
+  animation:slideIn .25s ease;
+}
+.backup-modal-icon{font-size:48px;margin-bottom:12px;line-height:1;}
+.backup-modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--red);margin-bottom:12px;}
+.backup-modal-msg{font-size:var(--fs-base);color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.backup-modal-btn{
+  padding:10px 32px;background:var(--red);color:white;border:none;border-radius:8px;
+  font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;
+}
+.backup-modal-btn:hover{background:var(--red-light);}
+
+
 .edit-search-wrap{margin-bottom:12px;}
 .edit-search-box{
   width:100%;padding:0 12px 0 36px;height:40px;
@@ -568,6 +595,16 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 
 <div class="toast" id="toast"></div>
 
+<!-- Modal thông báo sao lưu thành công -->
+<div class="backup-modal-overlay" id="backup-modal" onclick="closeBackupModal()">
+  <div class="backup-modal-box" onclick="event.stopPropagation()">
+    <div class="backup-modal-icon">✅</div>
+    <p class="backup-modal-title">Sao lưu thành công!</p>
+    <p class="backup-modal-msg">Hãy lưu giữ file này cẩn thận — bạn có thể dùng để khôi phục dữ liệu khi chuyển sang thiết bị mới hoặc lỡ xóa lịch sử trình duyệt.</p>
+    <button onclick="closeBackupModal()" class="backup-modal-btn">Đã hiểu</button>
+  </div>
+</div>
+
 <!-- HDSD full-screen overlay -->
 <div class="page-overlay" id="hdsd-overlay">
   <div class="page-overlay-inner">
@@ -587,7 +624,12 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
           <li>🔒 <strong>Hoàn toàn riêng tư</strong> - không ai khác có thể xem dữ liệu của bạn</li>
           <li>⚠️ <strong>Xoá dữ liệu trình duyệt/đổi trình duyệt</strong> sẽ làm mất toàn bộ dữ liệu đã nhập</li>
         </ul>
-        <p style="margin-top:12px">👉 <strong>Khuyến nghị:</strong> Sử dụng <strong>một trình duyệt cố định</strong> trên thiết bị chính. Định kỳ xuất file <code>.ics</code> để có bản sao lưu dự phòng.</p>
+        <p style="margin-top:12px">👉 <strong>Khuyến nghị:</strong> Sử dụng <strong>một trình duyệt cố định</strong> trên thiết bị chính. Định kỳ nhấn nút bên dưới để sao lưu dữ liệu dự phòng.</p>
+        <div style="margin-top:16px;text-align:center;">
+          <button onclick="backupData()" style="padding:10px 24px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">
+            💾 Sao lưu dữ liệu
+          </button>
+        </div>
       </div>
 
       <hr>
@@ -734,7 +776,7 @@ const MN=['','Tháng Giêng','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm'
 
 const DD=[
   {id:1,month:1,cat:'cung',name:'Bà nội',day:11,note:''},
-  {id:2,month:1,cat:'gui',name:'Bố vợ (ông Hiệu)',day:14,note:''},
+  {id:2,month:1,cat:'gui',name:'Bố vợ',day:14,note:''},
   {id:3,month:1,cat:'gui',name:'Ông Thược',day:16,note:''},
   {id:4,month:1,cat:'nho',name:'Tổ Tuấn',day:4,note:''},
   {id:5,month:1,cat:'nho',name:'Cụ bà đẻ ra Bác Điền',day:21,note:''},
@@ -749,7 +791,7 @@ const DD=[
   {id:14,month:3,cat:'nho',name:'Bác Thuận',day:2,note:''},
   {id:15,month:3,cat:'nho',name:'Tinh Tuyết Hoa Làng',day:3,note:''},
   {id:16,month:3,cat:'nho',name:'Cụ bà đẻ ra bà nội',day:7,note:''},
-  {id:17,month:4,cat:'cung',name:'Bố (ông Sức)',day:5,note:''},
+  {id:17,month:4,cat:'cung',name:'Bố',day:5,note:''},
   {id:18,month:4,cat:'cung',name:'Ông nội',day:8,note:''},
   {id:19,month:4,cat:'gui',name:'Cụ Ông đẻ Ông Hạo',day:14,note:''},
   {id:20,month:4,cat:'gui',name:'Tổ Thập',day:16,note:'Gửi Chị Hắt'},
@@ -775,7 +817,7 @@ const DD=[
   {id:40,month:10,cat:'nho',name:'Bác Điền',day:6,note:''},
   {id:41,month:10,cat:'nho',name:'Bố Bác Tiện',day:28,note:''},
   {id:42,month:10,cat:'nho',name:'Bác Tiện',day:29,note:''},
-  {id:43,month:11,cat:'cung',name:'Mẹ (bà Sáo)',day:18,note:''},
+  {id:43,month:11,cat:'cung',name:'Mẹ',day:18,note:''},
   {id:44,month:11,cat:'gui',name:'Bà Đậy',day:2,note:''},
   {id:45,month:11,cat:'gui',name:'Bà Choẹt',day:20,note:''},
   {id:46,month:11,cat:'nho',name:'Bác Hoén',day:10,note:''},
@@ -1127,6 +1169,75 @@ function dlBlob(content,type,filename){
 // ════════════════════════════════════════════
 function showHDSD(){document.getElementById('hdsd-overlay').classList.add('visible');document.body.style.overflow='hidden';}
 function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('visible');document.body.style.overflow='';}
+
+// ════════════════════════════════════════════
+// SAO LƯU DỮ LIỆU
+// ════════════════════════════════════════════
+function backupData(){
+  try{
+    const backup={
+      version:APP_VERSION,
+      exportedAt:new Date().toISOString(),
+      data:data
+    };
+    const json=JSON.stringify(backup,null,2);
+    const date=new Date();
+    const fname=`lichgio_backup_${date.getFullYear()}${p2(date.getMonth()+1)}${p2(date.getDate())}.json`;
+    dlBlob(json,'application/json',fname);
+    // Hiển thị modal thông báo
+    document.getElementById('backup-modal').classList.add('visible');
+  }catch(e){showToast('⚠ Không thể xuất dữ liệu.');}
+}
+function closeBackupModal(){document.getElementById('backup-modal').classList.remove('visible');}
+
+// ════════════════════════════════════════════
+// TỰ ĐỘNG CẬP NHẬT (Service Worker)
+// ════════════════════════════════════════════
+(function(){
+  if(!('serviceWorker' in navigator))return;
+  // Tạo SW blob để bypass CSP inline — SW tự fetch lại trang khi có version mới
+  const swCode=`
+const CACHE='ngaygio-v${APP_VERSION}';
+const URL_TO_CACHE=['./'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URL_TO_CACHE)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(
+    caches.keys().then(keys=>Promise.all(
+      keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
+    )).then(()=>self.clients.claim())
+  );
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.mode==='navigate'){
+    e.respondWith(
+      fetch(e.request).then(res=>{
+        const clone=res.clone();
+        caches.open(CACHE).then(c=>c.put(e.request,clone));
+        return res;
+      }).catch(()=>caches.match(e.request))
+    );
+    return;
+  }
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+});
+`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl,{scope:'./'}).then(reg=>{
+    reg.addEventListener('updatefound',()=>{
+      const newSW=reg.installing;
+      newSW.addEventListener('statechange',()=>{
+        if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+          // Có bản cập nhật mới — tự reload
+          newSW.postMessage({type:'SKIP_WAITING'});
+          navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
+        }
+      });
+    });
+  }).catch(()=>{});
+})();
 
 // ════════════════════════════════════════════
 // ════════════════════════════════════════════
