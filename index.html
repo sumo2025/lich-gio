@@ -308,6 +308,101 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .btn-back{padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;flex-shrink:0;transition:background .2s;}
 .btn-back:hover{background:var(--red-light);}
 .page-overlay-title{font-family:'Playfair Display',serif;font-size:var(--fs-lg);font-weight:700;color:var(--red);}
+
+/* ── HDSD: Section header banner ── */
+.hdsd-section-header{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,#fff8ee 0%,#fef3e2 100%);
+  border-left:5px solid var(--gold);
+  color:var(--ink);padding:14px 20px;border-radius:10px 10px 0 0;
+  margin:24px 0 0;border-top:1px solid #e8d5a3;
+  border-right:1px solid #e8d5a3;
+}
+.hdsd-section-header.hdsd-sec-blue{
+  background:linear-gradient(135deg,#f0f5fb 0%,#e8eef7 100%);
+  border-left-color:var(--blue);
+  border-top-color:#c8d8ea;border-right-color:#c8d8ea;
+}
+.hdsd-section-header .hdsd-sec-icon{font-size:24px;flex-shrink:0;}
+.hdsd-section-header h3{
+  font-family:'Playfair Display',serif;font-size:17px;font-weight:700;
+  color:var(--red);margin:0;letter-spacing:.3px;
+}
+.hdsd-section-header.hdsd-sec-blue h3{color:var(--blue);}
+.hdsd-section-header p{
+  font-size:13px;margin:3px 0 0;color:var(--muted);
+  font-style:normal;line-height:1.4;
+}
+[data-theme="dark"] .hdsd-section-header{
+  background:linear-gradient(135deg,#2a2010 0%,#241c0e 100%);
+  border-left-color:var(--gold);border-top-color:#3a3020;border-right-color:#3a3020;
+}
+[data-theme="dark"] .hdsd-section-header.hdsd-sec-blue{
+  background:linear-gradient(135deg,#141e2a 0%,#111824 100%);
+  border-left-color:var(--blue);border-top-color:#1e2e3e;border-right-color:#1e2e3e;
+}
+[data-theme="dark"] .hdsd-section-header h3{color:var(--gold-light);}
+[data-theme="dark"] .hdsd-section-header.hdsd-sec-blue h3{color:#7ab8e8;}
+/* Section body wraps the device-block children */
+.hdsd-section-body{
+  border:1px solid var(--border);border-top:none;
+  border-radius:0 0 10px 10px;overflow:hidden;margin-bottom:24px;
+  box-shadow:var(--shadow);
+}
+.hdsd-link-row-blue{background:var(--cat-gui-bg)!important;}
+.hdsd-section-body .hdsd-link-row{
+  background:var(--input-bg);padding:12px 20px;
+  border-bottom:1px solid var(--border);
+  font-size:var(--fs-base);display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.hdsd-section-body .hdsd-link-row a{
+  color:var(--blue);font-weight:600;text-decoration:none;word-break:break-all;
+}
+.hdsd-section-body .hdsd-link-row a:hover{text-decoration:underline;}
+/* Device blocks inside section body lose their own shadow/border */
+.hdsd-section-body .device-block{
+  border:none;border-radius:0;box-shadow:none;margin:0;
+  border-bottom:1px solid var(--border);
+}
+.hdsd-section-body .device-block:last-child{border-bottom:none;}
+/* ICS alarm rules summary */
+.hdsd-alarm-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin:16px 0;
+}
+.hdsd-alarm-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;text-align:center;
+}
+.hdsd-alarm-card .alabel{
+  font-size:var(--fs-sm);font-weight:600;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:6px;
+}
+.hdsd-alarm-card.c-cung .alabel{color:var(--red);}
+.hdsd-alarm-card.c-gui  .alabel{color:var(--blue);}
+.hdsd-alarm-card.c-nho  .alabel{color:var(--sage);}
+.hdsd-alarm-card .adays{font-size:12px;color:var(--muted);line-height:1.6;}
+.hdsd-success-tip{
+  background:linear-gradient(135deg,#f0fdf4 0%,#e8f5e9 100%);
+  border:1px solid #a5d6a7;border-radius:8px;
+  padding:12px 16px;margin:12px 0;
+  font-size:var(--fs-base);color:#2e7d32;
+  display:flex;align-items:center;gap:9px;line-height:1.6;font-style:italic;
+}
+[data-theme="dark"] .hdsd-success-tip{
+  background:linear-gradient(135deg,#1a2e1a 0%,#162516 100%);
+  border-color:#4a7a4a;color:#88cc88;
+}
+[data-theme="dark"] .hdsd-link-row-blue{background:var(--cat-gui-bg)!important;}
+.hdsd-section-body .hdsd-link-row{background:var(--input-bg);}
+@media(max-width:600px){
+  .hdsd-alarm-grid{grid-template-columns:1fr;gap:6px;}
+  .hdsd-section-header{padding:11px 14px;}
+  .hdsd-section-header h3{font-size:15px;}
+  .hdsd-link-row-blue{background:var(--cat-gui-bg)!important;}
+.hdsd-section-body .hdsd-link-row{padding:10px 14px;}
+}
+
 .hdsd h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--red);margin:24px 0 10px;display:flex;align-items:center;gap:7px;}
 .hdsd h3:first-child{margin-top:0;}
 .hdsd p,.hdsd li{font-size:var(--fs-md);line-height:1.8;color:var(--ink);}
@@ -681,7 +776,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.3</span>
+    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.4</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -800,77 +895,111 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
       <hr>
 
       <!-- PHẦN 1: Tạo shortcut -->
-      <h3>📱 Tạo shortcut trên điện thoại / máy tính bảng</h3>
-      <p>Thêm link GitHub Pages 
-    <strong><a href="https://sumo2025.github.io/lich-gio" target="_blank" rel="noopener">https://sumo2025.github.io/lich-gio</a></strong> 
-    vào màn hình chính để mở nhanh như một ứng dụng:</p>
-      <div class="device-block">
-        <h3>🍎 iPhone / iPad (Safari)</h3>
-        <ol>
-          <li>Mở link GitHub Pages bằng <strong>Safari</strong></li>
-          <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
-          <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
-          <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
-        </ol>
+      <div class="hdsd-section-header">
+        <span class="hdsd-sec-icon">📱</span>
+        <div>
+          <h3>Tạo shortcut trên điện thoại / máy tính bảng</h3>
+          <p>Thêm vào màn hình chính để mở nhanh như một ứng dụng thật</p>
+        </div>
       </div>
-      <div class="device-block">
-        <h3>🤖 Android (Chrome)</h3>
-        <ol>
-          <li>Mở link GitHub Pages bằng <strong>Chrome</strong></li>
-          <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
-          <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
-          <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện trên màn hình</li>
-        </ol>
+      <div class="hdsd-section-body">
+        <div class="hdsd-link-row">
+          🔗 Link ứng dụng: <a href="https://sumo2025.github.io/lich-gio" target="_blank" rel="noopener">https://sumo2025.github.io/lich-gio</a>
+        </div>
+        <div class="device-block">
+          <h3>🍎 iPhone / iPad (Safari)</h3>
+          <ol>
+            <li>Mở link bằng <strong>Safari</strong> (bắt buộc — Chrome trên iOS không hỗ trợ)</li>
+            <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
+            <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
+            <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
+          </ol>
+        </div>
+        <div class="device-block">
+          <h3>🤖 Android — Chrome</h3>
+          <ol>
+            <li>Mở link bằng <strong>Chrome</strong></li>
+            <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
+            <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
+            <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện ngay trên màn hình</li>
+          </ol>
+        </div>
+        <div class="device-block">
+          <h3>🤖 Android — Samsung Internet</h3>
+          <ol>
+            <li>Mở link bằng <strong>Samsung Internet</strong></li>
+            <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
+          </ol>
+        </div>
+        <div class="hdsd-success-tip">
+          ✅ Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật — không cần mở trình duyệt, không cần nhớ link!
+        </div>
       </div>
-      <div class="device-block">
-        <h3>🤖 Android (Samsung Internet)</h3>
-        <ol>
-          <li>Mở link GitHub Pages</li>
-          <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
-        </ol>
-      </div>
-      <p class="warn" style="margin-top:8px">💡 Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật!</p>
 
       <hr>
 
       <!-- PHẦN 2: Hướng dẫn sử dụng lịch nhắc nhở -->
-      <h3>📅 Hướng dẫn sử dụng file lịch nhắc nhở</h3>
-      <p>Sau khi bấm <strong>📅 Xuất lịch nhắc nhở (.ics)</strong>, bạn tải về file <code>.ics</code> - định dạng lịch chuẩn quốc tế dùng được trên mọi thiết bị.</p>
-      <div class="tip">
-        💡 <strong>Khuyến nghị:</strong> Tạo một <em>lịch riêng</em> mang tên "Lịch Giỗ Dòng Họ" thay vì nhập vào lịch mặc định - để sau này có thể bật/tắt hoặc xoá toàn bộ mà không ảnh hưởng đến lịch cá nhân.
+      <div class="hdsd-section-header hdsd-sec-blue">
+        <span class="hdsd-sec-icon">📅</span>
+        <div>
+          <h3>Hướng dẫn sử dụng file lịch nhắc nhở (.ics)</h3>
+          <p>Nhập vào Google Lịch / Apple Lịch để nhận nhắc nhở tự động trước ngày giỗ</p>
+        </div>
       </div>
-      <div class="device-block">
-        <h3>🍎 iPhone / iPad (iOS &amp; iPadOS)</h3>
-        <p class="tip" style="margin-bottom:10px">📥 <strong>File .ics lưu ở đâu?</strong> Safari lưu vào <strong>Tệp (Files) → Đã tải xuống</strong>. Chrome/Firefox lưu vào <em>Tệp → Trên iPhone này → [Tên trình duyệt]</em>. Kéo thanh thông báo xuống để thấy "Đã tải xong".</p>
-        <p><strong>Cách 1 - Ứng dụng Tệp (dễ nhất):</strong></p>
-        <ol>
-          <li>Mở app <strong>Tệp (Files)</strong> → thư mục <strong>Đã tải xuống</strong> → tìm file <code>Lich_gio.ics</code></li>
-          <li>Nhấn vào file → iOS hỏi "Thêm tất cả X sự kiện?" → nhấn <strong>Thêm</strong></li>
-          <li>Chọn lịch → <strong>Thêm</strong></li>
-        </ol>
-        <p style="margin-top:10px"><strong>Cách 2 - Qua email:</strong> Gửi file <code>.ics</code> vào email, mở mail → nhấn file đính kèm → <strong>Thêm tất cả</strong>.</p>
-        <p style="margin-top:8px" class="warn">⚠ Safari trên iPhone không mở file .ics trực tiếp - dùng Files hoặc email.</p>
-        <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Mở app <strong>Lịch</strong> → nhấn tab <em>Lịch</em> (góc dưới cùng) → <strong>Thêm lịch</strong> → đặt tên "Lịch Giỗ Dòng Họ" → khi nhập .ics, chọn lịch này.</p>
-      </div>
-      <div class="device-block">
-        <h3>🤖 Android</h3>
-        <p><strong>Cách 1 - Google Calendar trên máy tính (khuyến nghị):</strong></p>
-        <ol>
-          <li>Mở <strong>calendar.google.com</strong> trên trình duyệt</li>
-          <li>⚙ Cài đặt → <strong>Nhập &amp; xuất → Nhập</strong></li>
-          <li>Chọn file <code>.ics</code> → chọn lịch → <strong>Nhập</strong></li>
-          <li>Lịch tự đồng bộ về điện thoại qua tài khoản Google</li>
-        </ol>
-        <p class="tip" style="margin:10px 0 6px">📥 <strong>File .ics được lưu ở đâu?</strong> Chrome Android tự lưu vào <strong>Tải xuống</strong>. Mở app <strong>Quản lý tệp</strong> (hoặc <strong>File Manager / Tệp của tôi</strong>) → <em>Tải xuống</em> → tìm file <code>Lich_gio.ics</code>. Hoặc kéo thanh thông báo xuống → nhấn "Đã tải xong" để mở ngay.</p>
-        <p style="margin-top:10px"><strong>Cách 2 - Trực tiếp trên điện thoại:</strong> Google Calendar → ☰ → <strong>Cài đặt → Nhập sự kiện</strong> → chọn file <code>.ics</code> trong thư mục <strong>Tải xuống</strong>.</p>
-        <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Trong Google Lịch → nhấn <strong>Lịch khác → Tạo lịch mới</strong> → đặt tên "Lịch Giỗ Dòng Họ" → khi nhập .ics chọn lịch này.</p>
-      </div>
-      <div class="tip" style="margin-top:20px">
-        📅 <strong>Nhắc nhở tự động theo từng loại giỗ:</strong><br>
-        • <strong>Cúng</strong>: nhắc trước <strong>15 ngày, 7 ngày và 3 ngày</strong><br>
-        • <strong>Gửi</strong>: nhắc trước <strong>3 ngày và 1 ngày</strong><br>
-        • <strong>Nhớ ngày</strong>: nhắc trước <strong>1 ngày</strong><br><br>
-        File <code>.ics</code> xuất cả năm hiện tại lẫn năm sau để không bỏ lỡ ngày gần nhất.
+      <div class="hdsd-section-body">
+        <div class="hdsd-link-row hdsd-link-row-blue">
+          💡 <strong>Khuyến nghị:</strong> Tạo <em>lịch riêng</em> tên <strong>"Lịch Giỗ Dòng Họ"</strong> — để sau này tắt/xóa riêng mà không ảnh hưởng lịch cá nhân.
+        </div>
+
+        <div class="device-block">
+          <h3>🍎 iPhone / iPad (iOS &amp; iPadOS)</h3>
+          <div class="tip" style="margin-bottom:12px;">
+            📥 <strong>File lưu ở đâu?</strong> Safari → <strong>Tệp → Đã tải xuống</strong>. Chrome/Firefox → <em>Tệp → Trên iPhone này → [Tên trình duyệt]</em>.
+          </div>
+          <p><strong>Cách 1 — Ứng dụng Tệp</strong> <em>(dễ nhất)</em></p>
+          <ol>
+            <li>Mở app <strong>Tệp</strong> → <strong>Đã tải xuống</strong> → tìm file <code>Lich_gio.ics</code></li>
+            <li>Nhấn vào file → chọn lịch → nhấn <strong>Thêm tất cả</strong></li>
+          </ol>
+          <p style="margin-top:10px"><strong>Cách 2 — Qua email:</strong> Gửi file về email → mở đính kèm → nhấn <strong>Thêm tất cả</strong>.</p>
+          <p class="warn" style="margin-top:8px">⚠ Safari trên iPhone không mở .ics trực tiếp — phải dùng Tệp hoặc email.</p>
+          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> App <strong>Lịch</strong> → tab <em>Lịch</em> (dưới cùng) → <strong>Thêm lịch</strong> → đặt tên → khi nhập .ics chọn lịch đó.</p>
+        </div>
+
+        <div class="device-block">
+          <h3>🤖 Android</h3>
+          <div class="tip" style="margin-bottom:12px;">
+            📥 <strong>File lưu ở đâu?</strong> Chrome tự lưu vào <strong>Tải xuống</strong>. Mở <strong>Quản lý tệp → Tải xuống</strong> → tìm <code>Lich_gio.ics</code>. Hoặc kéo thanh thông báo → nhấn <strong>"Đã tải xong"</strong> để mở ngay.
+          </div>
+          <p><strong>Cách 1 — Google Calendar trên máy tính</strong> <em>(khuyến nghị)</em></p>
+          <ol>
+            <li>Mở <strong>calendar.google.com</strong> trên máy tính</li>
+            <li>⚙ Cài đặt → <strong>Nhập &amp; xuất → Nhập</strong></li>
+            <li>Chọn file <code>Lich_gio.ics</code> → chọn lịch → nhấn <strong>Nhập</strong></li>
+            <li>Lịch tự đồng bộ về điện thoại qua tài khoản Google</li>
+          </ol>
+          <p style="margin-top:10px"><strong>Cách 2 — Trực tiếp trên điện thoại:</strong> Google Lịch → ☰ → <strong>Cài đặt → Nhập sự kiện</strong> → chọn file trong thư mục <strong>Tải xuống</strong>.</p>
+          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Google Lịch → <strong>Lịch khác → Tạo lịch mới</strong> → đặt tên → khi nhập .ics chọn lịch đó.</p>
+        </div>
+
+        <div style="padding:16px 20px;">
+          <p style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Lịch nhắc nhở tự động theo loại giỗ</p>
+          <div class="hdsd-alarm-grid">
+            <div class="hdsd-alarm-card c-cung">
+              <div class="alabel">🕯️ Cúng</div>
+              <div class="adays">Trước <strong>15 ngày</strong><br>Trước <strong>7 ngày</strong><br>Trước <strong>3 ngày</strong></div>
+            </div>
+            <div class="hdsd-alarm-card c-gui">
+              <div class="alabel">📦 Gửi</div>
+              <div class="adays">Trước <strong>3 ngày</strong><br>Trước <strong>1 ngày</strong></div>
+            </div>
+            <div class="hdsd-alarm-card c-nho">
+              <div class="alabel">🌸 Nhớ ngày</div>
+              <div class="adays">Trước <strong>1 ngày</strong></div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--muted);font-style:italic;margin-top:8px;">File .ics xuất cả năm hiện tại lẫn năm sau — không bỏ lỡ ngày gần nhất.</p>
+        </div>
       </div>
 
       <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);">
@@ -886,7 +1015,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.3';
+const APP_VERSION='1.4.4';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
