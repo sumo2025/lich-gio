@@ -39,7 +39,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
   font-family:'Lora',Georgia,serif;
-  background:var(--paper);color:var(--ink);min-height:100vh;
+  background:var(--paper);color:var(--ink);min-height:100dvh;
   font-size:var(--fs-base);
   transition:background .3s,color .3s;
   padding-top:env(safe-area-inset-top);
@@ -786,13 +786,38 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 }
 </style>
     <!-- ==================== PWA - Ẩn address bar ==================== -->
-    <link rel="manifest" href="manifest.json">
+    <script>
+    // Inline PWA Manifest - không cần file ngoài
+    (function(){
+      var manifest={
+        name:'Lịch Giỗ Dòng Họ',short_name:'Lịch Giỗ',
+        display:'standalone',start_url:'./',
+        background_color:'#faf7f2',theme_color:'#8b1a1a',
+        icons:[{src:'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2296%22 fill=%22%238b1a1a%22/%3E%3Ctext x=%2296%22 y=%22130%22 text-anchor=%22middle%22 font-size=%22100%22%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E',sizes:'192x192',type:'image/svg+xml'},{src:'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22256%22 fill=%22%238b1a1a%22/%3E%3Ctext x=%22256%22 y=%22340%22 text-anchor=%22middle%22 font-size=%22260%22%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E',sizes:'512x512',type:'image/svg+xml'}]
+      };
+      var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+      var url=URL.createObjectURL(blob);
+      var link=document.createElement('link');link.rel='manifest';link.href=url;
+      document.head.appendChild(link);
+    })();
+    </script>
 
     <!-- iOS / Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lịch giỗ dòng họ">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="Lịch Giỗ">
+    <script>
+    // Tạo apple-touch-icon runtime bằng Canvas - không cần file ngoài
+    (function(){
+      var c=document.createElement('canvas');c.width=180;c.height=180;
+      var ctx=c.getContext('2d');
+      ctx.fillStyle='#8b1a1a';ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+      ctx.font='100px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('🪷',90,95);
+      var link=document.createElement('link');link.rel='apple-touch-icon';link.href=c.toDataURL('image/png');
+      document.head.appendChild(link);
+    })();
+    </script>
 
     <!-- Android / Chrome -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -831,9 +856,9 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   </select>
   <div class="controls-btns">
     <button class="ctrl-btn btn-add-goto" onclick="scrollToAdd()">🕯️ Thêm ngày giỗ mới</button>
+    <button class="ctrl-btn btn-tienich" onclick="showTienIch()">🛠️ Tiện ích</button>
     <button class="ctrl-btn btn-ics" onclick="showICSModal()">📅 Xuất lịch nhắc nhở</button>
     <button class="ctrl-btn btn-hdsd" onclick="showHDSD()">📖 Hướng dẫn</button>
-    <button class="ctrl-btn btn-tienich" onclick="showTienIch()">🛠️ Tiện ích</button>
   </div>
 </div>
 
@@ -942,7 +967,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>Tạo bởi <strong>Lê Minh Hải</strong> · 2026 · v1.4.5</span>
+    <span>V1.4.6 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1409,7 +1434,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.5';
+const APP_VERSION='1.4.6';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1428,6 +1453,24 @@ function escICS(s){
 // Để đổi: thay PIN_HASH = djb2('pinMới') - chạy trong console
 const PIN_HASH=2088290703;
 function djb2(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h)+s.charCodeAt(i)|0;return h>>>0;}
+
+// [SEC-2] safeParseJSON - chặn prototype pollution
+function safeParseJSON(str){
+  try{
+    const obj=JSON.parse(str);
+    if(obj&&typeof obj==='object'){
+      const forbidden=['__proto__','constructor','prototype'];
+      const check=function(o){
+        if(!o||typeof o!=='object')return o;
+        forbidden.forEach(function(k){if(Object.prototype.hasOwnProperty.call(o,k))delete o[k];});
+        Object.values(o).forEach(function(v){if(v&&typeof v==='object')check(v);});
+        return o;
+      };
+      return check(obj);
+    }
+    return obj;
+  }catch(e){return null;}
+}
 
 // ════════════════════════════════════════════
 // LUNAR → SOLAR (Hồ Ngọc Đức - 100% offline)
@@ -1933,7 +1976,7 @@ function processRestoreFile(file){
   const reader=new FileReader();
   reader.onload=function(e){
     try{
-      const obj=JSON.parse(e.target.result);
+      const obj=safeParseJSON(e.target.result);
       let arr=null;
       // Hỗ trợ cả format backup {version,data:[...]} lẫn array thuần
       if(Array.isArray(obj))arr=obj;
