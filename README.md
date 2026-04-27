@@ -1,166 +1,149 @@
-# 🕯️ Lịch Giỗ Dòng Họ - v1.4.2
+# 🪷 Lịch Giỗ Dòng Họ
 
-Ứng dụng web tĩnh lưu giữ và nhắc nhở ngày giỗ theo âm lịch của Họ Lê.  
-Chạy hoàn toàn trên trình duyệt - không cần server, không cần internet.
+> **Lưu giữ ký ức - Tưởng nhớ tổ tiên & người thân**
 
-\---
+[![Version](https://img.shields.io/badge/version-V1.5.0-b8860b?style=flat-square)](https://github.com/sumo2025/lich-gio/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT-5a7a5a?style=flat-square)](#license)
+[![PWA](https://img.shields.io/badge/PWA-ready-2c5f8a?style=flat-square)](#cài-đặt-pwa)
+[![No dependencies](https://img.shields.io/badge/dependencies-none-8b1a1a?style=flat-square)](#)
 
-## 🆕 Latest Release - v1.4.2
+Ứng dụng web quản lý lịch giỗ dòng họ - chạy hoàn toàn trên trình duyệt, không cần server, không cần tài khoản. Một file HTML duy nhất, cài lên màn hình điện thoại như app thật.
 
-> \*22/04/2026\*
+🔗 **Demo:** https://sumo2025.github.io/lich-gio
 
-### 💾 Sao lưu \& Khôi phục dữ liệu
-
-* **Sao lưu dữ liệu** - xuất toàn bộ danh sách ngày giỗ ra file `.json` để lưu trữ dự phòng. Dùng được khi chuyển sang thiết bị mới hoặc lỡ xóa dữ liệu trình duyệt
-* **Khôi phục dữ liệu** - nạp lại dữ liệu từ file `.json` đã sao lưu, hỗ trợ kéo thả file
-* Cả hai nút có mặt ở mục **Hướng dẫn** và ngay trong tab **Sửa dữ liệu** để tiện thao tác
-
-### 🗑️ Xóa toàn bộ dữ liệu
-
-* Nút **Xóa toàn bộ dữ liệu** trong tab Sửa dữ liệu (yêu cầu xác thực PIN)
-* Hiện popup cảnh báo và nhắc sao lưu trước khi xóa
-
-### 📋 File hướng dẫn nhập liệu
-
-* Kèm file **Excel mẫu** (`HuongDan\_NhapDuLieu\_LichGio.xlsx`) để điền danh sách ngày giỗ theo biểu mẫu rõ ràng - dành cho người không rành công nghệ
-* Gồm 3 sheet: **Hướng dẫn** · **Dữ liệu** (có xác thực ô nhập) · **JSON Mẫu** (để nhờ ChatGPT chuyển đổi sang `.json`)
-
-### 🔄 Tự động cập nhật
-
-* Ứng dụng tự nhận phiên bản mới khi bạn cập nhật file lên GitHub - không cần xóa lịch sử trình duyệt, không ảnh hưởng dữ liệu đã lưu
-
-### 📱 Hiển thị đúng trên iPhone có tai thỏ
-
-* Giao diện không còn bị che khuất ở phần trên cùng trên iPhone có notch / Dynamic Island, áp dụng cho cả trang Hướng dẫn
-
-\---
+---
 
 ## ✨ Tính năng
 
-* Hiển thị ngày giỗ theo tháng âm lịch, phân loại: **Cúng / Gửi / Nhớ ngày**
-* Bảng **Lịch giỗ 30 ngày tới** - đếm ngược tự động
-* Quy đổi âm lịch → dương lịch hoàn toàn offline (thuật toán Hồ Ngọc Đức)
-* **Tab Thêm ngày giỗ mới** - nhập liệu nhanh
-* **Tab Sửa dữ liệu** - chỉnh sửa/xóa/xóa tất cả, bảo vệ bằng mã PIN
-* **Sao lưu \& Khôi phục dữ liệu** - xuất/nhập file `.json`
-* Xuất **`.ics`** với nhắc nhở thông minh theo từng loại giỗ
-* Mục **Hướng dẫn** - lưu ý dữ liệu, tạo shortcut, cách dùng file lịch nhắc nhở
-* **Dark mode** / Light mode
-* Giao diện responsive: điện thoại (kể cả tai thỏ), máy tính bảng, PC
+### 📋 Quản lý ngày giỗ
+- Thêm, sửa, xóa ngày giỗ với tên, loại (Cúng / Gửi / Nhớ ngày) và ghi chú
+- Hiển thị ngày dương lịch tương ứng theo từng năm (tự tính)
+- Lọc theo tháng, tìm kiếm theo tên
+- Chỉ hiển thị từ tháng hiện tại đến cuối năm khi không filter - tránh nhìn quá khứ
 
-## 📅 Quy tắc nhắc nhở trong file .ics
+### 📅 Lịch & Nhắc nhở
+- **30 ngày tới** - panel nổi bật các ngày giỗ sắp đến, đếm số ngày còn lại
+- **Lịch âm theo tháng** - xem âm dương song song, đánh dấu ngày giỗ trực tiếp trên lịch
+- **Xuất file .ics** - nhập vào Google Lịch / Apple Lịch để nhận thông báo tự động:
+  - 🕯️ Cúng: trước 15 ngày, 7 ngày, 3 ngày
+  - 📦 Gửi: trước 3 ngày, 1 ngày
+  - 🌸 Nhớ ngày: trước 1 ngày
 
-|Loại giỗ|Nhắc trước|
-|-|-|
-|**Cúng** (trong nhà)|15 ngày · 7 ngày · 3 ngày|
-|**Gửi** (họ hàng)|3 ngày · 1 ngày|
-|**Nhớ ngày**|1 ngày|
+### 🔄 Tiện ích chuyển đổi ngày
+- **Dương → Âm lịch**: nhập ngày dương lịch bất kỳ, xem ngày âm lịch tương ứng
+- **Âm → Dương lịch**: nhập ngày âm lịch, xem ngày dương và thứ trong tuần
+- Thuật toán Hồ Ngọc Đức (đã sửa bug lunarYear), chính xác từ 1900-2100
+- Auto-advance: gõ đủ 2 số ngày → tự nhảy sang ô tháng → ô năm
 
-File `.ics` xuất cho cả năm hiện tại và năm sau.
+### 🎨 Giao diện
+- Light mode / Dark mode (toggle thủ công, lưu localStorage)
+- Mobile-first, tối ưu iOS Safari và Android Chrome
+- Khung "Hôm nay" hiển thị ngày dương + âm lịch hiện tại
+- Button scroll-to-top (trang chủ lẫn hướng dẫn)
 
-## 📅 Quy đổi âm lịch → dương lịch
+### 💾 Dữ liệu & Bảo mật
+- Lưu hoàn toàn trên thiết bị (localStorage) - không server, không tài khoản
+- **Sao lưu / Khôi phục** dữ liệu qua file JSON
+- CSP header chặn script ngoài, không gọi API ngoài
+- `safeParseJSON` chặn prototype pollution khi restore file
+- PWA manifest và apple-touch-icon tạo runtime (không cần file ngoài)
 
-> \*\*Hoàn toàn tự động, không cần internet, đúng mọi năm kể cả 2027, 2028...\*\*
+---
 
-Thuật toán **Hồ Ngọc Đức** nhúng trực tiếp trong HTML - tính toán ngay trên trình duyệt, xử lý đúng năm nhuận âm lịch, múi giờ UTC+7.
+## 🚀 Cài đặt PWA
 
-## 💾 Dữ liệu \& Sao lưu
+### iPhone / iPad (Safari)
+1. Mở link bằng **Safari**
+2. Nhấn biểu tượng **Chia sẻ** → **Thêm vào Màn hình chính**
+3. Đặt tên → nhấn **Thêm**
 
-* Dữ liệu lưu trong **localStorage** của trình duyệt - không mất khi đóng tab
-* **Không đồng bộ** giữa các thiết bị - mỗi thiết bị lưu riêng
-* **Nên sao lưu định kỳ** bằng nút *💾 Sao lưu dữ liệu* → lưu file `.json` về máy
-* Khi đổi thiết bị hoặc lỡ xóa lịch sử trình duyệt: dùng *📂 Khôi phục dữ liệu* để nạp lại
+### Android (Chrome)
+1. Mở link bằng **Chrome**
+2. Nhấn **⋮** → **Thêm vào màn hình chính** hoặc **Cài ứng dụng**
 
-## 🚀 Sử dụng
+---
 
-### GitHub Pages
+## 📁 Cấu trúc
 
-1. Fork repo → **Settings → Pages → Branch: main → / (root)** → Save
-2. Truy cập: `https://<tên-tài-khoản>.github.io/<tên-repo>/`
-
-### Offline
-
-Mở `index.html` bằng bất kỳ trình duyệt nào. Không cần cài đặt gì.
-
-## 🔒 Bảo mật \& An toàn khi share GitHub
-
-|#|Vấn đề|Giải pháp|
-|-|-|-|
-|1|XSS qua innerHTML|`esc()` escape mọi dữ liệu người dùng trước khi render|
-|2|Toast hiển thị HTML|Dùng `textContent` thay `innerHTML`|
-|3|ICS injection|`escICS()` theo RFC 5545|
-|4|Thiếu Content Security Policy|Meta CSP - chặn script ngoài, chặn `connect-src`|
-|5|localStorage không validate|`validateRecord()` - kiểu, độ dài, whitelist `cat`|
-|6|Input không giới hạn|`maxlength` HTML + `.slice()` JS|
-|7|PIN plain text|Hash djb2 - không lưu PIN gốc trong source|
-|8|Brute-force PIN|Khoá 30 giây sau 5 lần sai|
-
-> \*\*Không có API key, không gọi server ngoài\*\* (chỉ Google Fonts), không lưu dữ liệu lên internet → \*\*an toàn tuyệt đối khi đưa lên GitHub public.\*\*
-
-## 🔑 Đổi mã PIN
-
-PIN mặc định là **1234**. Để đổi:
-
-1. Mở DevTools (F12) → Console
-2. Chạy: `djb2('pinMới')` - ví dụ `djb2('5678')` → trả về một số
-3. Sửa `const PIN\_HASH=` trong file HTML thành số đó
-
-## 📲 Hướng dẫn nhập file `.ics` vào lịch
-
-Nhấn nút **📖 Hướng dẫn** trong ứng dụng để xem hướng dẫn đầy đủ cho từng thiết bị.  
-Tóm tắt nhanh:
-
-### 🍎 iPhone / iPad
-
-1. App **Files** → tìm file `.ics` → nhấn → **Thêm tất cả**
-2. Hoặc gửi file qua email → mở đính kèm → **Thêm tất cả**
-
-> ⚠ Safari không mở .ics trực tiếp - dùng Files hoặc email.
-
-👉 Tạo lịch riêng: App **Lịch** → tab *Lịch* → **Thêm lịch** → đặt tên "Lịch Giỗ Dòng Họ"
-
-### 🤖 Android
-
-1. Mở **calendar.google.com** trên máy tính → ⚙ → **Nhập \& xuất → Nhập** → chọn file `.ics`
-2. Lịch tự đồng bộ về điện thoại qua tài khoản Google
-
-👉 Tạo lịch riêng: Google Calendar → **Lịch khác → Tạo lịch mới**
-
-### 🖥️ Windows - Outlook
-
-**File → Mở \& Xuất → Nhập/Xuất** → *Nhập tệp iCalendar* → chọn file → **Nhập**
-
-### 🍎 macOS - Calendar
-
-Kéo file `.ics` vào cửa sổ Calendar, hoặc **Tệp → Nhập…**
-
-### 🌐 Google Calendar (Trình duyệt)
-
-**calendar.google.com** → ⚙ Cài đặt → **Nhập \& xuất → Nhập**
-
-> 💡 \*\*Khuyến nghị:\*\* Tạo \*\*lịch riêng\*\* "Lịch Giỗ Dòng Họ" thay vì nhập vào lịch mặc định - để sau này có thể xóa riêng mà không ảnh hưởng lịch cá nhân.
-
-## 🛠️ Tùy chỉnh danh sách ngày giỗ
-
-Mở file HTML → sửa mảng `DD`:
-
-```js
-const DD = \[
-  { id: 1, month: 1, cat: 'cung', name: 'Bà nội', day: 11, note: '' },
-  // ...
-];
+```
+lich-gio/
+├── index.html        ← Toàn bộ ứng dụng (single-file)
+└── README.md
 ```
 
-|Trường|Giá trị hợp lệ|
-|-|-|
-|`month`|1–12 (tháng âm)|
-|`day`|1–30 (ngày âm)|
-|`cat`|`'cung'` / `'gui'` / `'nho'`|
-|`name`|Tối đa 80 ký tự|
-|`note`|Tối đa 120 ký tự|
+Không có dependencies, không có build step. Mở `index.html` bằng trình duyệt là chạy được.
 
-## 📄 Giấy phép
+---
 
-Dự án cá nhân - chia sẻ tự do trong gia đình họ Lê.  
-Tạo bởi **Lê Minh Hải** · 2026
+## 🛠 Stack kỹ thuật
 
+| Hạng mục | Chi tiết |
+|---|---|
+| Ngôn ngữ | Vanilla HTML / CSS / JavaScript (ES6) |
+| Dependencies | Không có |
+| Fonts | Google Fonts (Playfair Display, Lora) |
+| Storage | localStorage (prefix `lichgio_`) |
+| Lịch âm | Thuật toán Hồ Ngọc Đức - đã patch bug `lunarYear` |
+| PWA | Manifest inline (Blob URL), Service Worker (Blob URL), apple-touch-icon Canvas |
+| Bảo mật | CSP meta, `esc()` sanitize, `safeParseJSON`, không eval() |
+
+---
+
+## 📦 Deploy lên GitHub Pages
+
+```bash
+# Clone hoặc fork repo
+git clone https://github.com/sumo2025/lich-gio.git
+cd lich-gio
+
+# Copy file mới nhất thành index.html
+cp lich-gio_V1.5.0.html index.html
+
+# Push lên GitHub
+git add .
+git commit -m "release: V1.5.0"
+git push origin main
+```
+
+Sau đó vào **Settings → Pages → Source: main branch** → GitHub tự deploy.
+
+---
+
+## 📝 Changelog
+
+### V1.5.0 *(latest)*
+- Auto-advance date inputs: gõ đủ 2 số ngày/tháng → tự nhảy sang ô tiếp theo
+- Validation: ngày ≤ 31, tháng ≤ 12, năm clamp 1900-2100
+- Mobile: thu hẹp ô tìm kiếm để "Tất cả các tháng" hiển thị đầy đủ
+- Select tháng âm lịch dùng tên tiếng Việt (Giêng, Hai, Ba...)
+- Desktop: controls row đủ rộng, không còn khoảng trắng thừa
+
+### V1.4.9
+- Today-banner 2 dòng: icon + ngày dương (dòng 1), âm lịch (dòng 2)
+- Button về đầu trang đổi thành hình tròn 44×44px (giống HDSD)
+- Mobile controls không tràn (box-sizing border-box)
+
+### V1.4.8
+- **Fix bug lunarToSolar** trả `undefined/undefined/undefined` - dùng approach `getNM` thay vì dò loop
+- Khung "Hôm nay" hiển thị ngày dương + âm lịch hiện tại
+- Home chỉ hiện ngày giỗ từ tháng hiện tại đến cuối năm
+- Lịch âm theo tháng: tên tháng âm thay số, reset về tháng hiện tại khi mở
+- Button scroll-to-top trong HDSD
+- Font lịch âm tăng 5%
+- Mobile: ô tìm kiếm và chọn tháng cùng 1 dòng
+
+### V1.4.7
+- **Fix bug `solarToLunar`** sai lunarYear (code cũ dùng `solarMonth < 4` làm ngưỡng - sai)
+- Tab "Chuyển đổi ngày" với 2 chiều: Dương → Âm và Âm → Dương
+
+### V1.4.6
+- `min-height: 100dvh` thay `100vh` (fix Safari mobile)
+- PWA manifest và apple-touch-icon inline (không cần file ngoài)
+- `safeParseJSON()` chặn prototype pollution
+- Sắp xếp lại buttons: Thêm + Tiện ích (hàng 1), Xuất lịch + Hướng dẫn (hàng 2)
+
+---
+
+## 📄 License
+
+MIT © Lê Minh Hải
