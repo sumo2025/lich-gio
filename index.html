@@ -784,8 +784,8 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   /* Controls: search + filter cùng 1 dòng, buttons 2x2 grid */
   .controls{flex-direction:column;align-items:stretch;gap:8px;width:100%;box-sizing:border-box;}
   .controls-search-row{display:flex;gap:8px;width:100%;box-sizing:border-box;flex:none;}
-  .search-box{flex:1.4 1 0;height:42px;min-width:0;}
-  .filter-month{flex:1 1 0;height:42px;min-width:0;text-align:left;}
+  .search-box{flex:1 1 0;height:42px;min-width:0;}
+  .filter-month{flex:0 0 auto;width:148px;height:42px;min-width:0;text-align:left;}
   .controls-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;box-sizing:border-box;}
   .controls-btns .ctrl-btn{width:100%;height:42px;justify-content:center;flex-shrink:0;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 
@@ -949,18 +949,26 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
       </div>
       <div class="form-group">
         <label>Ngày âm lịch</label>
-        <input type="number" id="inp-day" min="1" max="30" placeholder="1–30">
+        <input type="number" id="inp-day" min="1" max="30" placeholder="1–30"
+          oninput="
+            this.value=this.value.replace(/[^0-9]/g,'');
+            if(parseInt(this.value)>30)this.value='30';
+            if(this.value.length>=2&&parseInt(this.value)>=1){
+              var sel=document.getElementById('inp-month');
+              if(sel){sel.focus();}
+            }
+          ">
       </div>
       <div class="form-group">
         <label>Tháng âm lịch</label>
-        <select id="inp-month">
+        <select id="inp-month" onchange="updatePreview()">
           <option value="">-- Chọn tháng --</option>
-          <option value="1">Tháng 1</option><option value="2">Tháng 2</option>
-          <option value="3">Tháng 3</option><option value="4">Tháng 4</option>
-          <option value="5">Tháng 5</option><option value="6">Tháng 6</option>
-          <option value="7">Tháng 7</option><option value="8">Tháng 8</option>
-          <option value="9">Tháng 9</option><option value="10">Tháng 10</option>
-          <option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+          <option value="1">Tháng Giêng</option><option value="2">Tháng Hai</option>
+          <option value="3">Tháng Ba</option><option value="4">Tháng Tư</option>
+          <option value="5">Tháng Năm</option><option value="6">Tháng Sáu</option>
+          <option value="7">Tháng Bảy</option><option value="8">Tháng Tám</option>
+          <option value="9">Tháng Chín</option><option value="10">Tháng Mười</option>
+          <option value="11">Tháng Mười Một</option><option value="12">Tháng Chạp</option>
         </select>
       </div>
       <div class="form-group fg-note">
@@ -1020,7 +1028,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.4.9 · <strong>Developed by Pavel Hải</strong></span>
+    <span>V1.5.0 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1282,15 +1290,15 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         <div class="conv-row">
           <div class="conv-group" style="flex:0 0 68px">
             <label>Ngày</label>
-            <input type="number" id="conv-day" min="1" max="31" placeholder="DD" oninput="runConvert()">
+            <input type="number" id="conv-day" min="1" max="31" placeholder="DD">
           </div>
           <div class="conv-group" style="flex:0 0 68px">
             <label>Tháng</label>
-            <input type="number" id="conv-mon" min="1" max="12" placeholder="MM" oninput="runConvert()">
+            <input type="number" id="conv-mon" min="1" max="12" placeholder="MM">
           </div>
           <div class="conv-group" style="flex:1;min-width:88px">
             <label>Năm</label>
-            <input type="number" id="conv-yr" min="1900" max="2100" placeholder="YYYY" oninput="runConvert()">
+            <input type="number" id="conv-yr" min="1900" max="2100" placeholder="YYYY">
           </div>
           <div class="conv-group" style="flex:0 0 auto;justify-content:flex-end;">
             <label>&nbsp;</label>
@@ -1308,15 +1316,15 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         <div class="conv-row">
           <div class="conv-group" style="flex:0 0 68px">
             <label>Ngày</label>
-            <input type="number" id="conv-lday" min="1" max="30" placeholder="DD" oninput="runConvertRev()">
+            <input type="number" id="conv-lday" min="1" max="30" placeholder="DD">
           </div>
           <div class="conv-group" style="flex:0 0 68px">
             <label>Tháng</label>
-            <input type="number" id="conv-lmon" min="1" max="12" placeholder="MM" oninput="runConvertRev()">
+            <input type="number" id="conv-lmon" min="1" max="12" placeholder="MM">
           </div>
           <div class="conv-group" style="flex:1;min-width:88px">
             <label>Năm ÂL</label>
-            <input type="number" id="conv-lyr" min="1900" max="2100" placeholder="YYYY" oninput="runConvertRev()">
+            <input type="number" id="conv-lyr" min="1900" max="2100" placeholder="YYYY">
           </div>
           <div class="conv-group" style="flex:0 0 auto;justify-content:flex-end;">
             <label>&nbsp;</label>
@@ -1404,8 +1412,78 @@ function getCanChi(year){return CAN_[(year-4)%10]+' '+CHI_[(year-4)%12];}
 // LUNAR → SOLAR (dò từ JD)
 // ════════════════════════════════════════════
 // ════════════════════════════════════════════
-// CONV UI: direction toggle + runners
+// AUTO-ADVANCE DATE INPUTS
+// Khi nhập đủ 2 số cho ngày → focus sang tháng
+// Khi nhập đủ 2 số cho tháng → focus sang năm
+// Validate: ngày ≤ 31, tháng ≤ 12, năm = 4 chữ số
 // ════════════════════════════════════════════
+function setupDateInputs(dayId,monId,yrId,onChange){
+  var dayEl=document.getElementById(dayId);
+  var monEl=document.getElementById(monId);
+  var yrEl =document.getElementById(yrId);
+  if(!dayEl||!monEl||!yrEl)return;
+
+  function clamp(el,min,max){
+    var v=parseInt(el.value)||0;
+    if(v>max)el.value=max;
+    else if(el.value.length>=2&&v<min)el.value=min;
+  }
+
+  dayEl.addEventListener('input',function(){
+    // Chỉ cho phép số
+    this.value=this.value.replace(/[^0-9]/g,'');
+    // Chặn ngày > 31
+    if(parseInt(this.value)>31)this.value='31';
+    // Chặn số 0 đơn
+    if(this.value==='0')return;
+    // Auto-advance khi đủ 2 ký tự
+    if(this.value.length>=2){
+      clamp(this,1,31);
+      monEl.focus();monEl.select();
+    }
+    if(onChange)onChange();
+  });
+
+  monEl.addEventListener('input',function(){
+    this.value=this.value.replace(/[^0-9]/g,'');
+    if(parseInt(this.value)>12)this.value='12';
+    if(this.value==='0')return;
+    if(this.value.length>=2){
+      clamp(this,1,12);
+      yrEl.focus();yrEl.select();
+    }
+    if(onChange)onChange();
+  });
+
+  yrEl.addEventListener('input',function(){
+    this.value=this.value.replace(/[^0-9]/g,'');
+    if(this.value.length>4)this.value=this.value.slice(0,4);
+    if(this.value.length===4){
+      var y=parseInt(this.value);
+      if(y<1900)this.value='1900';
+      if(y>2100)this.value='2100';
+    }
+    if(onChange)onChange();
+  });
+
+  // Backspace từ month → day
+  monEl.addEventListener('keydown',function(e){
+    if(e.key==='Backspace'&&!this.value)dayEl.focus();
+  });
+  // Backspace từ year → month
+  yrEl.addEventListener('keydown',function(e){
+    if(e.key==='Backspace'&&!this.value)monEl.focus();
+  });
+}
+
+function initDateInputs(){
+  // Conv: dương → âm
+  setupDateInputs('conv-day','conv-mon','conv-yr',runConvert);
+  // Conv: âm → dương
+  setupDateInputs('conv-lday','conv-lmon','conv-lyr',runConvertRev);
+}
+// Gọi sau khi DOM sẵn sàng
+document.addEventListener('DOMContentLoaded',initDateInputs);
 var _convDir='s2l'; // 's2l' | 'l2s'
 function setConvDir(dir){
   _convDir=dir;
@@ -1596,7 +1674,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.9';
+const APP_VERSION='1.5.0';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1877,8 +1955,7 @@ function updatePreview(){
     catch(e){p.textContent='Không thể quy đổi';}
   }else{p.textContent='💡 Nhập ngày & chọn tháng âm lịch để xem ngày dương lịch tương ứng năm nay';}
 }
-document.getElementById('inp-day').addEventListener('input',updatePreview);
-document.getElementById('inp-month').addEventListener('change',updatePreview);
+// listeners cho inp-day và inp-month đã xử lý inline qua oninput/onchange
 
 // ════════════════════════════════════════════
 // TABS
