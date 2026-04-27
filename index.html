@@ -75,10 +75,11 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .legend-dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.15);flex-shrink:0;}
 
 /* ── Controls ── */
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:stretch;}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:stretch;width:100%;}
+.controls-search-row{display:flex;gap:8px;flex:1 1 300px;min-width:0;}
 .controls-btns{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
 .search-box{
-  flex:1.5 1 200px;min-width:0;
+  flex:1 1 0;min-width:0;
   padding:0 12px 0 36px;height:42px;
   border:1px solid var(--border);border-radius:8px;
   font-family:'Lora',serif;font-size:var(--fs-base);
@@ -289,13 +290,16 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
   border:1px solid rgba(184,134,11,.25);border-left:4px solid var(--gold);
   border-radius:10px;padding:12px 18px;margin-bottom:16px;
   font-family:'Lora',serif;font-size:var(--fs-md);color:var(--ink);
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  display:flex;align-items:center;gap:10px;
   box-shadow:0 2px 8px rgba(184,134,11,.08);
 }
 .today-banner .tb-icon{font-size:20px;flex-shrink:0;}
+.today-banner .tb-content{display:flex;flex-direction:column;gap:2px;}
+.today-banner .tb-line1{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+.today-banner .tb-line2{font-size:calc(var(--fs-md) * 0.95);}
 .today-banner .tb-solar{font-weight:600;color:var(--ink);}
 .today-banner .tb-lunar{color:var(--gold);font-weight:600;}
-.today-banner .tb-sep{color:var(--border);margin:0 2px;}
+.today-banner .tb-sep{color:var(--muted);margin:0 2px;font-weight:400;}
 
 /* ── Upcoming Panel ── */
 .upcoming-panel{
@@ -739,14 +743,15 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .hdsd-scroll-top.visible{display:flex;}
 .hdsd-scroll-top:hover{background:var(--red-light);transform:translateY(-2px);}
 
-/* ── Back to Home (fixed, shown when edit tab active) ── */
+/* ── Back to Home (fixed round button) ── */
 .btn-back-home{
-  display:none;position:fixed;-webkit-position:sticky;bottom:20px;right:20px;z-index:900;
-  padding:0 16px;height:42px;background:var(--red);color:white;
-  border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);
-  cursor:pointer;box-shadow:0 4px 16px rgba(139,26,26,.35);
+  display:none;position:fixed;bottom:20px;right:20px;z-index:900;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--red);color:white;border:none;
+  font-size:20px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px rgba(139,26,26,.35);
   transition:background .2s,transform .1s,opacity .25s;
-  align-items:center;gap:6px;
+  align-items:center;justify-content:center;
 }
 .btn-back-home:hover{background:var(--red-light);transform:translateY(-2px);}
 .btn-back-home.visible{display:inline-flex;}
@@ -777,12 +782,12 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   .legend-item{font-size:13px;}
 
   /* Controls: search + filter cùng 1 dòng, buttons 2x2 grid */
-  .controls{flex-direction:column;align-items:stretch;gap:8px;}
-  .controls-search-row{display:flex;gap:8px;}
-  .search-box{flex:1.4;height:42px;min-width:0;}
-  .filter-month{flex:1;height:42px;min-width:0;text-align:left;}
-  .controls-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .controls-btns .ctrl-btn{width:100%;height:42px;justify-content:center;flex-shrink:0;}
+  .controls{flex-direction:column;align-items:stretch;gap:8px;width:100%;box-sizing:border-box;}
+  .controls-search-row{display:flex;gap:8px;width:100%;box-sizing:border-box;flex:none;}
+  .search-box{flex:1.4 1 0;height:42px;min-width:0;}
+  .filter-month{flex:1 1 0;height:42px;min-width:0;text-align:left;}
+  .controls-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;box-sizing:border-box;}
+  .controls-btns .ctrl-btn{width:100%;height:42px;justify-content:center;flex-shrink:0;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 
   .upcoming-panel-title{font-size:15px;}
   .upcoming-item{grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:3px 8px;padding:11px 12px;}
@@ -811,7 +816,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   .btn-add{width:100%;height:44px;}
 
   /* Back home btn */
-  .btn-back-home{bottom:12px;right:12px;font-size:13px;padding:0 14px;height:38px;}
+  .btn-back-home{bottom:calc(12px + env(safe-area-inset-bottom));right:12px;width:44px;height:44px;font-size:20px;padding:0;}
 
   .toast{bottom:0;left:0;right:0;border-radius:0;text-align:center;padding:14px 16px;}
   footer{padding:16px 12px 16px;}
@@ -1015,12 +1020,12 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.4.8 · <strong>Developed by Pavel Hải</strong></span>
+    <span>V1.4.9 · <strong>Developed by Pavel Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
 
-<button class="btn-back-home" id="btn-back-home" onclick="scrollToTop()">↑ Về đầu trang</button>
+<button class="btn-back-home" id="btn-back-home" onclick="scrollToTop()" title="Về đầu trang">↑</button>
 
 <div class="toast" id="toast"></div>
 
@@ -1591,7 +1596,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.4.8';
+const APP_VERSION='1.4.9';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2268,9 +2273,10 @@ function renderTodayBanner(){
   var DOW=['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
   var dow=DOW[now.getDay()];
   el.innerHTML='<span class="tb-icon">📅</span>'
-    +'<span><span class="tb-solar">'+dow+', '+p2(d)+'/'+p2(m)+'/'+y+'</span>'
-    +' <span class="tb-sep">·</span> '
-    +'tức ngày <span class="tb-lunar">'+lunar.day+' tháng '+LUNAR_MN_SHORT[lunar.month]+'</span> Âm lịch</span>';
+    +'<span class="tb-content">'
+      +'<span class="tb-line1"><span class="tb-solar">'+dow+', '+p2(d)+'/'+p2(m)+'/'+y+'</span></span>'
+      +'<span class="tb-line2">tức ngày <span class="tb-lunar">'+lunar.day+' tháng '+LUNAR_MN_SHORT[lunar.month]+'</span> Âm lịch</span>'
+    +'</span>';
 }
 
 renderTodayBanner();
