@@ -1056,7 +1056,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.3 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.4 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1717,7 +1717,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.3';
+const APP_VERSION='1.5.4';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2190,6 +2190,18 @@ function doExportICS(){
   showToast('✓ Đã xuất '+events.length+' sự kiện ('+startYr+'–'+endYr+')');
 }
 function dlBlob(content,type,filename){
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(isIOS&&type.includes('calendar')){
+    // iOS Safari: data URI không có thuộc tính download
+    // → Safari nhận MIME text/calendar → mở thẳng app Lịch với nút "Add All"
+    const bytes=new TextEncoder().encode(content);
+    let bin='';for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+    const a=document.createElement('a');
+    a.href='data:text/calendar;base64,'+btoa(bin);
+    // KHÔNG đặt a.download - Safari cần không có download attr để mở app Lịch
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    return;
+  }
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;
