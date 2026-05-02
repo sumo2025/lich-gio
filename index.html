@@ -370,6 +370,7 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .entry-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:2px;}
 .entry-lunar{font-size:14px;color:var(--muted);text-align:center;}
 .entry-solar{font-size:var(--fs-base);font-weight:500;text-align:center;font-family:'Lora',serif;}
+.entry-dow{font-size:11px;font-weight:400;opacity:.75;white-space:nowrap;}
 .cat-cung .entry-solar{color:var(--red);}
 .cat-gui  .entry-solar{color:var(--blue);}
 .cat-nho  .entry-solar{color:var(--sage);}
@@ -1056,7 +1057,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.1 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.2 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1074,21 +1075,21 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
     </div>
     <p class="ics-modal-sub">Chọn khoảng thời gian cần xuất. File <code>.ics</code> sẽ chứa tất cả ngày giỗ quy đổi sang dương lịch cho từng năm.</p>
     <div class="ics-year-options">
+      <button class="ics-year-btn" data-years="3" onclick="selectICSYears(3)">
+        3 năm
+        <span class="ics-year-label" id="ics-label-3"></span>
+      </button>
       <button class="ics-year-btn" data-years="5" onclick="selectICSYears(5)">
         5 năm
         <span class="ics-year-label" id="ics-label-5"></span>
       </button>
+      <button class="ics-year-btn" data-years="8" onclick="selectICSYears(8)">
+        8 năm
+        <span class="ics-year-label" id="ics-label-8"></span>
+      </button>
       <button class="ics-year-btn" data-years="10" onclick="selectICSYears(10)">
         10 năm
         <span class="ics-year-label" id="ics-label-10"></span>
-      </button>
-      <button class="ics-year-btn" data-years="15" onclick="selectICSYears(15)">
-        15 năm
-        <span class="ics-year-label" id="ics-label-15"></span>
-      </button>
-      <button class="ics-year-btn" data-years="20" onclick="selectICSYears(20)">
-        20 năm
-        <span class="ics-year-label" id="ics-label-20"></span>
       </button>
     </div>
     <div class="ics-warn-box">
@@ -1717,7 +1718,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.1';
+const APP_VERSION='1.5.2';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1820,7 +1821,15 @@ let nextId=Math.max(...data.map(x=>x.id),0)+1;
 // ════════════════════════════════════════════
 // HELPERS
 // ════════════════════════════════════════════
+const DOW_LABEL=['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
 function getSolar(item){try{const[d,m,y]=lunarToSolar(item.day,item.month,new Date().getFullYear());return formatSolar(d,m,y);}catch(e){return'-';}}
+function getSolarWithDow(item){
+  try{
+    const[d,m,y]=lunarToSolar(item.day,item.month,new Date().getFullYear());
+    const dow=new Date(y,m-1,d).getDay();
+    return{solar:formatSolar(d,m,y),dow:DOW_LABEL[dow]};
+  }catch(e){return{solar:'-',dow:''};}}
+
 function getSolarDt(item,yr){try{const[d,m,y]=lunarToSolar(item.day,item.month,yr);return new Date(y,m-1,d);}catch(e){return null;}}
 function getDaysUntil(item){
   try{
@@ -1887,12 +1896,12 @@ function renderAll(){
       if(!items.length)return;
       html+=`<div class="category cat-${cat}"><div class="category-header"><span class="cat-dot"></span>${esc(CAT_LABELS[cat])} <small>(${items.length})</small></div><div class="entry-list">`;
       items.forEach(item=>{
-        const solar=getSolar(item),days=getDaysUntil(item),soon=days<=30;
+        const {solar,dow}=getSolarWithDow(item),days=getDaysUntil(item),soon=days<=30;
         // [SEC-1] id là số nguyên, không inject chuỗi người dùng vào onclick
         html+=`<div class="entry-row${soon?' upcoming-soon':''}">
           <div><div class="entry-name">${esc(item.name)}${soon?`<span class="days-badge">${days===0?'Hôm nay':days+' ngày'}</span>`:''}</div>${item.note?`<div class="entry-note">${esc(item.note)}</div>`:''}</div>
           <div class="entry-lunar">${p2(item.day)}/${p2(item.month)} âm</div>
-          <div class="entry-solar">${esc(solar)}</div>
+          <div class="entry-solar">${esc(solar)}<span class="entry-dow"> (${esc(dow)})</span></div>
         </div>`;
       });
       html+=`</div></div>`;
@@ -2102,7 +2111,7 @@ function showICSModal(){
   _icsSelectedYears=0;
   // Cập nhật label năm bắt đầu → năm kết thúc
   const yr=new Date().getFullYear();
-  [5,10,15,20].forEach(n=>{
+  [3,5,8,10].forEach(n=>{
     const el=document.getElementById('ics-label-'+n);
     if(el)el.textContent=yr+' – '+(yr+n-1);
   });
@@ -2163,8 +2172,39 @@ function doExportICS(){
 function dlBlob(content,type,filename){
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
-  URL.revokeObjectURL(url);
+  // iOS Safari không hỗ trợ thuộc tính download trên thẻ <a>
+  // → phát hiện iOS và dùng window.open để mở file trong tab mới
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(isIOS){
+    // Mở blob URL trong tab mới - người dùng nhấn giữ → Lưu vào File
+    const w=window.open(url,'_blank');
+    if(!w){
+      // Popup bị chặn: fallback hiển thị link modal
+      showIosDownloadModal(url,filename,type);
+    }else{
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+    }
+    return;
+  }
+  const a=document.createElement('a');a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+
+// Hiển thị modal hướng dẫn lưu file cho iOS khi popup bị chặn
+function showIosDownloadModal(url,filename,type){
+  // Tái sử dụng backup-modal để hiển thị hướng dẫn
+  const box=document.getElementById('backup-modal');
+  if(!box){window.open(url,'_blank');return;}
+  const title=box.querySelector('.backup-modal-title');
+  const msg=box.querySelector('.backup-modal-msg');
+  const btn=box.querySelector('.backup-modal-btn');
+  if(title)title.textContent='Tải file về thiết bị';
+  if(msg)msg.innerHTML=
+    'Trình duyệt chặn cửa sổ mới. Vui lòng nhấn nút bên dưới để mở file, sau đó nhấn giữ → <strong>"Tải về"</strong> hoặc <strong>"Lưu vào Tệp"</strong>.'
+    +'<br><br><a href="'+url+'" download="'+esc(filename)+'" target="_blank" style="display:inline-block;margin-top:8px;padding:10px 20px;background:var(--blue);color:white;border-radius:8px;text-decoration:none;font-family:\'Lora\',serif;">📥 Mở file '+esc(filename)+'</a>';
+  if(btn){btn.textContent='Đóng';btn.onclick=function(){closeBackupModal();setTimeout(()=>URL.revokeObjectURL(url),5000);};}
+  box.classList.add('visible');
 }
 
 // ════════════════════════════════════════════
