@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
@@ -1058,7 +1056,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.2 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.3 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1719,7 +1717,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.2';
+const APP_VERSION='1.5.3';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2101,9 +2099,13 @@ function saveEdits(){
 function buildAlarms(sum,cat){
   const offsets={cung:['-P15D','-P7D','-P3D'],gui:['-P3D','-P1D'],nho:['-P1D']};
   const labels={'-P15D':'15 ngày nữa','-P7D':'7 ngày nữa','-P3D':'3 ngày nữa','-P1D':'ngày mai'};
-  return(offsets[cat]||offsets.nho).map(t=>
-    `BEGIN:VALARM\r\nTRIGGER:${t}\r\nACTION:DISPLAY\r\nDESCRIPTION:Nhắc (${labels[t]}): ${sum}\r\nEND:VALARM`
-  ).join('\r\n');
+  return (offsets[cat]||offsets.nho).map(t=>[
+    'BEGIN:VALARM',
+    'TRIGGER:'+t,
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Nhắc ('+labels[t]+'): '+sum,
+    'END:VALARM'
+  ].join('\r\n')).join('\r\n');
 }
 
 let _icsSelectedYears=0;
@@ -2145,36 +2147,47 @@ function doExportICS(){
   const seen=new Set();const events=[];
   const years=[];
   for(let y=startYr;y<=endYr;y++)years.push(y);
+  const stamp=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
   data.forEach(item=>{
     years.forEach(y=>{
       try{
         const[d,m,ey]=lunarToSolar(item.day,item.month,y);
-        const dt=new Date(ey,m-1,d);
-        // Không lọc bỏ ngày đã qua — xuất toàn bộ năm được chọn
-        const uid=`ngaygio-${item.id}-${y}@hle`;
+        const uid='ngaygio-'+item.id+'-'+y+'@hle';
         if(seen.has(uid))return;seen.add(uid);
-        const ds=`${ey}${p2(m)}${p2(d)}`;
-        // DTEND phải là ngày hôm sau cho all-day event (RFC 5545)
-        const dtNext=new Date(ey,m-1,d+1);
-        const dsNext=`${dtNext.getFullYear()}${p2(dtNext.getMonth()+1)}${p2(dtNext.getDate())}`;
-        // DTSTAMP bắt buộc theo RFC 5545
-        const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+        // Dùng timestamp 08:00 giờ VN (UTC+7 → 01:00 UTC)
+        const ds=ey+p2(m)+p2(d)+'T010000Z';
+        const de=ey+p2(m)+p2(d)+'T020000Z';
         const cat=CAT_LABELS[item.cat]||item.cat;
-        const sum=`Ngày giỗ: ${escICS(item.name)} (${escICS(cat)})`;
-        const desc=`Ngày âm lịch: ${p2(item.day)}/${p2(item.month)}\\\\nLoại: ${escICS(cat)}${item.note?'\\\\nGhi chú: '+escICS(item.note):''}\\\\nHọ Lê`;
-        events.push(
-          `BEGIN:VEVENT\\r\\nUID:${uid}\\r\\nDTSTAMP:${stamp}\\r\\n`+
-          `DTSTART;VALUE=DATE:${ds}\\r\\nDTEND;VALUE=DATE:${dsNext}\\r\\n`+
-          `SUMMARY:${sum}\\r\\nDESCRIPTION:${desc}\\r\\n`+
-          buildAlarms(sum,item.cat)+`\\r\\nEND:VEVENT`
-        );
+        const sum='Ngày giỗ: '+escICS(item.name)+' ('+escICS(cat)+')';
+        const desc='Ngày âm lịch: '+p2(item.day)+'/'+p2(item.month)+'\\nLoại: '+escICS(cat)+(item.note?'\\nGhi chú: '+escICS(item.note):'')+'\\nHọ Lê';
+        const alarms=buildAlarms(sum,item.cat);
+        events.push([
+          'BEGIN:VEVENT',
+          'UID:'+uid,
+          'DTSTAMP:'+stamp,
+          'DTSTART:'+ds,
+          'DTEND:'+de,
+          'SUMMARY:'+sum,
+          'DESCRIPTION:'+desc,
+          alarms,
+          'END:VEVENT'
+        ].join('\r\n'));
       }catch(e){}
     });
   });
-  const fname=`Lich_gio_${startYr}-${endYr}.ics`;
-  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Ho Le//NgayGio//VI\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Lịch Giỗ Dòng Họ\r\nX-WR-TIMEZONE:Asia/Ho_Chi_Minh\r\n${events.join('\r\n')}\r\nEND:VCALENDAR`;
+  const fname='Lich_gio_'+startYr+'-'+endYr+'.ics';
+  const ics=[
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Ho Le//NgayGio//VI',
+    'CALSCALE:GREGORIAN',
+    'X-WR-CALNAME:Lịch Giỗ Dòng Họ',
+    'X-WR-TIMEZONE:Asia/Ho_Chi_Minh',
+    events.join('\r\n'),
+    'END:VCALENDAR'
+  ].join('\r\n');
   dlBlob(ics,'text/calendar;charset=utf-8',fname);
-  showToast(`✓ Đã xuất ${events.length} sự kiện (${startYr}–${endYr})`);
+  showToast('✓ Đã xuất '+events.length+' sự kiện ('+startYr+'–'+endYr+')');
 }
 function dlBlob(content,type,filename){
   const blob=new Blob([content],{type});
@@ -2298,41 +2311,6 @@ function deleteAllData(){
 }
 
 // ════════════════════════════════════════════
-// TỰ ĐỘNG CẬP NHẬT (Service Worker)
-// ════════════════════════════════════════════
-(function(){
-  if(!('serviceWorker' in navigator))return;
-  const swCode=`
-const CACHE='ngaygio-v${APP_VERSION}';
-self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));
-});
-self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
-});
-self.addEventListener('fetch',e=>{
-  if(e.request.mode==='navigate'){
-    e.respondWith(fetch(e.request).then(res=>{caches.open(CACHE).then(c=>c.put(e.request,res.clone()));return res;}).catch(()=>caches.match(e.request)));
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
-});
-self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
-`;
-  const blob=new Blob([swCode],{type:'application/javascript'});
-  const swUrl=URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl,{scope:'./'}).then(reg=>{
-    reg.addEventListener('updatefound',()=>{
-      const nw=reg.installing;
-      nw.addEventListener('statechange',()=>{
-        if(nw.state==='installed'&&navigator.serviceWorker.controller){
-          nw.postMessage({type:'SKIP_WAITING'});
-          navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
-        }
-      });
-    });
-  }).catch(()=>{});
-})();
 
 // ════════════════════════════════════════════
 // ════════════════════════════════════════════
