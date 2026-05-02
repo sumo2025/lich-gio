@@ -1163,28 +1163,6 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   </div>
 </div>
 
-<!-- Modal: Hướng dẫn lưu file trên iOS -->
-<div class="confirm-modal-overlay" id="ios-dl-modal" onclick="document.getElementById('ios-dl-modal').classList.remove('visible')">
-  <div class="confirm-modal-box" onclick="event.stopPropagation()" style="max-width:400px">
-    <div class="confirm-modal-top">
-      <div class="confirm-modal-icon">📅</div>
-      <div class="confirm-modal-title" style="color:var(--blue)">Lưu file lịch về máy</div>
-    </div>
-    <p class="confirm-modal-msg">
-      Nhấn nút bên dưới để mở file <code>.ics</code>. Sau đó Safari sẽ hỏi bạn muốn làm gì với file này - chọn <strong>"Thêm tất cả"</strong> để nhập thẳng vào Lịch, hoặc nhấn nút <strong>Chia sẻ ↑</strong> rồi chọn <strong>"Lưu vào Tệp"</strong> để lưu file.
-    </p>
-    <div style="text-align:center;margin-bottom:18px">
-      <a id="ios-dl-link" href="#" target="_blank"
-        style="display:inline-block;padding:13px 28px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-family:'Lora',serif;font-size:var(--fs-md);font-weight:600;letter-spacing:.3px">
-        📥 Nhấn vào đây để mở file
-      </a>
-    </div>
-    <div class="confirm-modal-footer" style="justify-content:center">
-      <button class="confirm-modal-cancel" onclick="document.getElementById('ios-dl-modal').classList.remove('visible')">Đóng</button>
-    </div>
-  </div>
-</div>
-
 <!-- HDSD full-screen overlay -->
 <div class="page-overlay" id="hdsd-overlay">
   <div class="page-overlay-inner">
@@ -2176,13 +2154,19 @@ function doExportICS(){
         const uid=`ngaygio-${item.id}-${y}@hle`;
         if(seen.has(uid))return;seen.add(uid);
         const ds=`${ey}${p2(m)}${p2(d)}`;
+        // DTEND phải là ngày hôm sau cho all-day event (RFC 5545)
+        const dtNext=new Date(ey,m-1,d+1);
+        const dsNext=`${dtNext.getFullYear()}${p2(dtNext.getMonth()+1)}${p2(dtNext.getDate())}`;
+        // DTSTAMP bắt buộc theo RFC 5545
+        const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
         const cat=CAT_LABELS[item.cat]||item.cat;
         const sum=`Ngày giỗ: ${escICS(item.name)} (${escICS(cat)})`;
-        const desc=`Ngày âm lịch: ${p2(item.day)}/${p2(item.month)}\\nLoại: ${escICS(cat)}${item.note?'\\nGhi chú: '+escICS(item.note):''}\\nHọ Lê`;
+        const desc=`Ngày âm lịch: ${p2(item.day)}/${p2(item.month)}\\\\nLoại: ${escICS(cat)}${item.note?'\\\\nGhi chú: '+escICS(item.note):''}\\\\nHọ Lê`;
         events.push(
-          `BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTART;VALUE=DATE:${ds}\r\nDTEND;VALUE=DATE:${ds}\r\n`+
-          `SUMMARY:${sum}\r\nDESCRIPTION:${desc}\r\n`+
-          buildAlarms(sum,item.cat)+`\r\nEND:VEVENT`
+          `BEGIN:VEVENT\\r\\nUID:${uid}\\r\\nDTSTAMP:${stamp}\\r\\n`+
+          `DTSTART;VALUE=DATE:${ds}\\r\\nDTEND;VALUE=DATE:${dsNext}\\r\\n`+
+          `SUMMARY:${sum}\\r\\nDESCRIPTION:${desc}\\r\\n`+
+          buildAlarms(sum,item.cat)+`\\r\\nEND:VEVENT`
         );
       }catch(e){}
     });
@@ -2193,42 +2177,11 @@ function doExportICS(){
   showToast(`✓ Đã xuất ${events.length} sự kiện (${startYr}–${endYr})`);
 }
 function dlBlob(content,type,filename){
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  if(isIOS){
-    // iOS Safari: dùng Data URI thay blob URL
-    // btoa() không xử lý Unicode → dùng TextEncoder → Uint8Array → base64 thủ công
-    try{
-      const bytes=new TextEncoder().encode(content);
-      let b64='';
-      // Chuyển Uint8Array → chuỗi binary rồi btoa
-      const chunkSize=8192;
-      for(let i=0;i<bytes.length;i+=chunkSize){
-        b64+=String.fromCharCode(...bytes.subarray(i,i+chunkSize));
-      }
-      b64=btoa(b64);
-      const mime=type.split(';')[0].trim();
-      const dataUri='data:'+mime+';base64,'+b64;
-      showIosDownloadModal(dataUri,filename);
-    }catch(e){
-      showToast('⚠ Không thể xuất file: '+e.message);
-    }
-    return;
-  }
-  // Desktop / Android
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;
   document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
-}
-
-// Modal iOS: hiển thị link Data URI kèm hướng dẫn từng bước
-function showIosDownloadModal(dataUri,filename){
-  const box=document.getElementById('ios-dl-modal');
-  if(!box)return;
-  const link=box.querySelector('#ios-dl-link');
-  if(link){link.href=dataUri;link.download=filename;link.textContent='📥 Nhấn vào đây để mở file';}
-  box.classList.add('visible');
+  URL.revokeObjectURL(url);
 }
 
 // ════════════════════════════════════════════
