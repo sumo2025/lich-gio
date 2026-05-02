@@ -1056,7 +1056,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.0 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.1 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1717,7 +1717,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.0';
+const APP_VERSION='1.5.1';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -1788,59 +1788,7 @@ const CAT_VALID=new Set(['cung','gui','nho']);
 const STORAGE_KEY='ngay_gio_ho_le_v2';
 const MN=['','Tháng Giêng','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Chạp'];
 
-const DD=[
-  {id:1,month:1,cat:'cung',name:'Bà nội',day:11,note:''},
-  {id:2,month:1,cat:'gui',name:'Bố vợ (ông Hiệu)',day:14,note:''},
-  {id:3,month:1,cat:'gui',name:'Ông Thược',day:16,note:''},
-  {id:4,month:1,cat:'nho',name:'Tổ Tuấn',day:4,note:''},
-  {id:5,month:1,cat:'nho',name:'Cụ bà đẻ ra Bác Điền',day:21,note:''},
-  {id:6,month:1,cat:'nho',name:'Bá Nhớn',day:23,note:''},
-  {id:7,month:1,cat:'nho',name:'Chú Nhai',day:25,note:''},
-  {id:8,month:2,cat:'gui',name:'Cụ Ông đẻ ra Bà Choẹt',day:9,note:'Gửi Bá Rụt'},
-  {id:9,month:2,cat:'nho',name:'Bố Bác Chài',day:13,note:''},
-  {id:10,month:2,cat:'nho',name:'Cụ Ông đẻ ra Bác Điền',day:13,note:''},
-  {id:11,month:2,cat:'nho',name:'Bác Hiếu',day:22,note:''},
-  {id:12,month:2,cat:'nho',name:'Lê Thị Quế Hoa Làng',day:6,note:''},
-  {id:13,month:2,cat:'nho',name:'Anh Tịch',day:13,note:'Bính Thân'},
-  {id:14,month:3,cat:'nho',name:'Bác Thuận',day:2,note:''},
-  {id:15,month:3,cat:'nho',name:'Tinh Tuyết Hoa Làng',day:3,note:''},
-  {id:16,month:3,cat:'nho',name:'Cụ bà đẻ ra bà nội',day:7,note:''},
-  {id:17,month:4,cat:'cung',name:'Bố (ông Sức)',day:5,note:''},
-  {id:18,month:4,cat:'cung',name:'Ông nội',day:8,note:''},
-  {id:19,month:4,cat:'gui',name:'Cụ Ông đẻ Ông Hạo',day:14,note:''},
-  {id:20,month:4,cat:'gui',name:'Tổ Thập',day:16,note:'Gửi Chị Hắt'},
-  {id:21,month:4,cat:'nho',name:'Tổ Thuận',day:21,note:''},
-  {id:22,month:5,cat:'nho',name:'Bác Trụ',day:13,note:''},
-  {id:23,month:5,cat:'nho',name:'Bá Vin',day:15,note:''},
-  {id:24,month:5,cat:'nho',name:'Bá Tý',day:18,note:''},
-  {id:25,month:5,cat:'nho',name:'Em Ngoan',day:20,note:''},
-  {id:26,month:5,cat:'nho',name:'Em Ngọc',day:23,note:''},
-  {id:27,month:6,cat:'gui',name:'Cụ Ông đẻ ra Ông Huyến',day:17,note:''},
-  {id:28,month:6,cat:'gui',name:'Ông Huyến',day:23,note:'Gửi Bá Tỉu'},
-  {id:29,month:6,cat:'nho',name:'Bá Xè',day:2,note:''},
-  {id:30,month:6,cat:'nho',name:'Bác Vân',day:8,note:''},
-  {id:31,month:6,cat:'nho',name:'Bác Chài',day:11,note:''},
-  {id:32,month:6,cat:'nho',name:'Anh Dông',day:15,note:'Bính Thân'},
-  {id:33,month:6,cat:'nho',name:'Tổ Bình',day:26,note:''},
-  {id:34,month:7,cat:'gui',name:'Tổ Châu',day:23,note:'Gửi Chị Hắt'},
-  {id:35,month:9,cat:'nho',name:'Anh Tiến',day:1,note:''},
-  {id:36,month:9,cat:'nho',name:'Tổ Khanh',day:9,note:''},
-  {id:37,month:9,cat:'nho',name:'Cô Mắn',day:16,note:''},
-  {id:38,month:10,cat:'gui',name:'Cụ Bà đẻ ra Ông Hạo',day:13,note:''},
-  {id:39,month:10,cat:'gui',name:'Cụ Bà đẻ ra Ông Thược',day:22,note:''},
-  {id:40,month:10,cat:'nho',name:'Bác Điền',day:6,note:''},
-  {id:41,month:10,cat:'nho',name:'Bố Bác Tiện',day:28,note:''},
-  {id:42,month:10,cat:'nho',name:'Bác Tiện',day:29,note:''},
-  {id:43,month:11,cat:'cung',name:'Mẹ (bà Sáo)',day:18,note:''},
-  {id:44,month:11,cat:'gui',name:'Bà Đậy',day:2,note:''},
-  {id:45,month:11,cat:'gui',name:'Bà Choẹt',day:20,note:''},
-  {id:46,month:11,cat:'nho',name:'Bác Hoén',day:10,note:''},
-  {id:47,month:11,cat:'nho',name:'Anh Viên',day:28,note:''},
-  {id:48,month:12,cat:'gui',name:'Ông Hạo',day:26,note:''},
-  {id:49,month:12,cat:'nho',name:'Tổ Nhất',day:13,note:''},
-  {id:50,month:12,cat:'nho',name:'Bá Mít',day:16,note:'Bính Thân'},
-  {id:51,month:12,cat:'nho',name:'Lê Thị Long Hoa Làng',day:13,note:''},
-];
+const DD=[];
 
 // [SEC-5] Validate record
 function validateRecord(item){
@@ -1857,12 +1805,12 @@ function validateRecord(item){
 function loadData(){
   try{
     const s=localStorage.getItem(STORAGE_KEY);
-    if(!s)return JSON.parse(JSON.stringify(DD));
+    if(!s)return [];
     const p=JSON.parse(s);
-    if(!Array.isArray(p))return JSON.parse(JSON.stringify(DD));
+    if(!Array.isArray(p))return [];
     const v=p.map(validateRecord).filter(Boolean);
-    return v.length?v:JSON.parse(JSON.stringify(DD));
-  }catch(e){return JSON.parse(JSON.stringify(DD));}
+    return v;
+  }catch(e){return [];}
 }
 function saveData(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}}
 
