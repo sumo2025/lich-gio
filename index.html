@@ -580,6 +580,8 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .hdsd-alarm-card.c-gui  .alabel{color:var(--blue);}
 .hdsd-alarm-card.c-nho  .alabel{color:var(--sage);}
 .hdsd-alarm-card .adays{font-size:12px;color:var(--muted);line-height:1.6;}
+.hdsd-tab-btn-active{background:var(--blue)!important;color:white!important;}
+.hdsd-tab-btn-inactive{background:var(--border2)!important;color:var(--ink2)!important;}
 .hdsd-success-tip{
   background:linear-gradient(135deg,#f0fdf4 0%,#e8f5e9 100%);
   border:1px solid #a5d6a7;border-radius:8px;
@@ -1056,7 +1058,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.6 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.8 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1195,92 +1197,92 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
       <div class="hdsd-section-header">
         <span class="hdsd-sec-icon">📱</span>
         <div>
-          <h3>Tạo shortcut trên điện thoại / máy tính bảng</h3>
-          <p>Thêm vào màn hình chính để mở nhanh như một ứng dụng thật</p>
+          <h3>Thêm vào màn hình chính</h3>
+          <p>Dùng như ứng dụng native - không cần cài đặt</p>
         </div>
       </div>
       <div class="hdsd-section-body">
         <div class="hdsd-link-row">
           🔗 Link ứng dụng: <a href="https://sumo2025.github.io/lich-gio" target="_blank" rel="noopener">https://sumo2025.github.io/lich-gio</a>
         </div>
-        <div class="device-block">
-          <h3>🍎 iPhone / iPad (Safari)</h3>
+        <!-- Tab switch iOS / Android -->
+        <div style="display:flex;gap:10px;padding:14px 16px 0;justify-content:center;">
+          <button id="hdsd-tab-ios" onclick="switchHdsdTab('ios')"
+            style="padding:10px 24px;border-radius:22px;border:none;cursor:pointer;font-size:15px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:1;transition:all .2s;">
+            🍎 iPhone / iOS
+          </button>
+          <button id="hdsd-tab-android" onclick="switchHdsdTab('android')"
+            style="padding:10px 24px;border-radius:22px;border:none;cursor:pointer;font-size:15px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:0.35;transition:all .2s;">
+            🤖 Android
+          </button>
+        </div>
+        <!-- Nội dung iOS -->
+        <div id="hdsd-content-ios" class="device-block" style="border-top:none;margin-top:0;">
           <ol>
-            <li>Mở link bằng <strong>Safari</strong> (bắt buộc — Chrome trên iOS không hỗ trợ)</li>
-            <li>Nhấn biểu tượng <strong>Chia sẻ</strong> ở thanh dưới màn hình (hình ô vuông có mũi tên hướng lên)</li>
-            <li>Kéo xuống danh sách → chọn <strong>"Thêm vào Màn hình chính"</strong></li>
-            <li>Đặt tên <em>"Lịch Giỗ Dòng Họ"</em> → nhấn <strong>Thêm</strong></li>
+            <li>Mở trang này trong <strong>Safari</strong> (không dùng Chrome/Firefox)</li>
+            <li>Nhấn nút <strong>Chia sẻ ↑</strong> ở thanh dưới cùng</li>
+            <li>Cuộn xuống và chọn <strong>"Thêm vào Màn hình chính"</strong></li>
+            <li>Nhấn <strong>Thêm</strong> - icon sẽ xuất hiện trên Màn hình chính</li>
           </ol>
         </div>
-        <div class="device-block">
-          <h3>🤖 Android — Chrome</h3>
+        <!-- Nội dung Android -->
+        <div id="hdsd-content-android" class="device-block" style="border-top:none;margin-top:0;display:none;">
+          <p style="margin-bottom:10px;font-weight:600;">Chrome <em>(khuyến nghị)</em></p>
           <ol>
-            <li>Mở link bằng <strong>Chrome</strong></li>
-            <li>Nhấn <strong>⋮</strong> (3 chấm dọc, góc trên phải)</li>
+            <li>Mở trang bằng <strong>Chrome</strong></li>
+            <li>Nhấn <strong>⋮</strong> (3 chấm, góc trên phải)</li>
             <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
-            <li>Nhấn <strong>Thêm</strong> → biểu tượng xuất hiện ngay trên màn hình</li>
+            <li>Nhấn <strong>Thêm</strong> - icon xuất hiện trên màn hình</li>
           </ol>
-        </div>
-        <div class="device-block">
-          <h3>🤖 Android — Samsung Internet</h3>
-          <ol>
-            <li>Mở link bằng <strong>Samsung Internet</strong></li>
-            <li>Nhấn <strong>☰</strong> (góc dưới phải) → chọn <strong>"Thêm trang vào"</strong> → <strong>"Màn hình chính"</strong></li>
+          <p style="margin-top:12px;font-weight:600;">Samsung Internet</p>
+          <ol style="margin-top:6px;">
+            <li>Nhấn <strong>☰</strong> (góc dưới phải)</li>
+            <li>Chọn <strong>"Thêm trang vào"</strong> - <strong>"Màn hình chính"</strong></li>
           </ol>
         </div>
         <div class="hdsd-success-tip">
-          ✅ Sau khi thêm shortcut, ứng dụng mở toàn màn hình như app thật — không cần mở trình duyệt, không cần nhớ link!
+          ✅ Sau khi thêm - ứng dụng mở toàn màn hình như app thật, không cần mở trình duyệt!
         </div>
       </div>
 
       <hr>
 
-      <!-- PHẦN 2: Hướng dẫn sử dụng lịch nhắc nhở -->
+      <!-- PHẦN 2: Hướng dẫn xuất lịch nhắc nhở -->
       <div class="hdsd-section-header hdsd-sec-blue">
         <span class="hdsd-sec-icon">📅</span>
         <div>
-          <h3>Hướng dẫn sử dụng file lịch nhắc nhở (.ics)</h3>
-          <p>Nhập vào Google Lịch / Apple Lịch để nhận nhắc nhở tự động trước ngày giỗ</p>
+          <h3>Xuất lịch nhắc nhở vào điện thoại</h3>
+          <p>Nhập vào Apple Lịch / Google Lịch để nhận nhắc nhở tự động trước ngày giỗ</p>
         </div>
       </div>
       <div class="hdsd-section-body">
         <div class="hdsd-link-row hdsd-link-row-blue">
-          💡 <strong>Khuyến nghị:</strong> Tạo <em>lịch riêng</em> tên <strong>"Lịch Giỗ Dòng Họ"</strong> — để sau này tắt/xóa riêng mà không ảnh hưởng lịch cá nhân.
+          💡 <strong>Khuyến nghị:</strong> Tạo <em>lịch riêng</em> tên <strong>"Lịch Giỗ Dòng Họ"</strong> để sau này tắt/xóa riêng mà không ảnh hưởng lịch cá nhân.
         </div>
 
         <div class="device-block">
-          <h3>🍎 iPhone / iPad (iOS &amp; iPadOS)</h3>
-          <div class="tip" style="margin-bottom:12px;">
-            📥 <strong>File lưu ở đâu?</strong> Safari → <strong>Tệp → Đã tải xuống</strong>. Chrome/Firefox → <em>Tệp → Trên iPhone này → [Tên trình duyệt]</em>.
-          </div>
-          <p><strong>Cách 1 — Ứng dụng Tệp</strong> <em>(dễ nhất)</em></p>
+          <h3>🍎 iPhone / iPad</h3>
           <ol>
-            <li>Mở app <strong>Tệp</strong> → <strong>Đã tải xuống</strong> → tìm file <code>Lich_gio.ics</code></li>
-            <li>Nhấn vào file → chọn lịch → nhấn <strong>Thêm tất cả</strong></li>
+            <li>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></li>
+            <li>App Lịch mở lên - nhấn <strong>"Thêm tất cả"</strong> để thêm tất cả ngày giỗ</li>
+            <li>Chọn lịch muốn lưu vào - nhấn <strong>Xong</strong></li>
           </ol>
-          <p style="margin-top:10px"><strong>Cách 2 — Qua email:</strong> Gửi file về email → mở đính kèm → nhấn <strong>Thêm tất cả</strong>.</p>
-          <p class="warn" style="margin-top:8px">⚠ Safari trên iPhone không mở .ics trực tiếp — phải dùng Tệp hoặc email.</p>
-          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> App <strong>Lịch</strong> → tab <em>Lịch</em> (dưới cùng) → <strong>Thêm lịch</strong> → đặt tên → khi nhập .ics chọn lịch đó.</p>
+          <p style="margin-top:10px;color:var(--muted);font-size:13px;">💡 Nếu không thấy nút "Thêm tất cả" - có thể lịch đó đã được thêm trước đó rồi. Xóa lịch giỗ cũ trong app Lịch rồi thử lại.</p>
         </div>
 
         <div class="device-block">
           <h3>🤖 Android</h3>
-          <div class="tip" style="margin-bottom:12px;">
-            📥 <strong>File lưu ở đâu?</strong> Chrome tự lưu vào <strong>Tải xuống</strong>. Mở <strong>Quản lý tệp → Tải xuống</strong> → tìm <code>Lich_gio.ics</code>. Hoặc kéo thanh thông báo → nhấn <strong>"Đã tải xong"</strong> để mở ngay.
-          </div>
-          <p><strong>Cách 1 — Google Calendar trên máy tính</strong> <em>(khuyến nghị)</em></p>
           <ol>
-            <li>Mở <strong>calendar.google.com</strong> trên máy tính</li>
-            <li>⚙ Cài đặt → <strong>Nhập &amp; xuất → Nhập</strong></li>
-            <li>Chọn file <code>Lich_gio.ics</code> → chọn lịch → nhấn <strong>Nhập</strong></li>
-            <li>Lịch tự đồng bộ về điện thoại qua tài khoản Google</li>
+            <li>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></li>
+            <li>File <code>.ics</code> tải về thư mục <strong>Tải xuống</strong></li>
+            <li>Mở <strong>Google Lịch</strong> - nhấn <strong>☰ - Cài đặt - Nhập sự kiện</strong> - chọn file vừa tải</li>
           </ol>
-          <p style="margin-top:10px"><strong>Cách 2 — Trực tiếp trên điện thoại:</strong> Google Lịch → ☰ → <strong>Cài đặt → Nhập sự kiện</strong> → chọn file trong thư mục <strong>Tải xuống</strong>.</p>
-          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Google Lịch → <strong>Lịch khác → Tạo lịch mới</strong> → đặt tên → khi nhập .ics chọn lịch đó.</p>
+          <p style="margin-top:10px"><strong>Hoặc qua máy tính:</strong> Mở <strong>calendar.google.com</strong> - Cài đặt ⚙ - <strong>Nhập &amp; xuất - Nhập</strong> - chọn file - lịch tự đồng bộ về điện thoại.</p>
+          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Google Lịch - <strong>Lịch khác - Tạo lịch mới</strong> - đặt tên - khi nhập file chọn lịch đó.</p>
         </div>
 
         <div style="padding:16px 20px;">
-          <p style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Lịch nhắc nhở tự động theo loại giỗ</p>
+          <p style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Nhắc nhở tự động theo loại giỗ</p>
           <div class="hdsd-alarm-grid">
             <div class="hdsd-alarm-card c-cung">
               <div class="alabel">🕯️ Cúng</div>
@@ -1295,7 +1297,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
               <div class="adays">Trước <strong>1 ngày</strong></div>
             </div>
           </div>
-          <p style="font-size:12px;color:var(--muted);font-style:italic;margin-top:8px;">File .ics xuất cả năm hiện tại lẫn năm sau — không bỏ lỡ ngày gần nhất.</p>
+          <p style="font-size:12px;color:var(--muted);font-style:italic;margin-top:8px;">Lịch xuất toàn bộ các năm đã chọn - không bỏ lỡ ngày nào.</p>
         </div>
       </div>
 
@@ -1717,7 +1719,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.6';
+const APP_VERSION='1.5.8';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2210,6 +2212,19 @@ function showHDSD(){
   }
 }
 function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('visible');document.body.style.overflow='';}
+function switchHdsdTab(tab){
+  const ios=document.getElementById('hdsd-content-ios');
+  const and=document.getElementById('hdsd-content-android');
+  const btnIos=document.getElementById('hdsd-tab-ios');
+  const btnAnd=document.getElementById('hdsd-tab-android');
+  if(tab==='ios'){
+    ios.style.display='';and.style.display='none';
+    btnIos.style.opacity='1';btnAnd.style.opacity='0.35';
+  }else{
+    ios.style.display='none';and.style.display='';
+    btnAnd.style.opacity='1';btnIos.style.opacity='0.35';
+  }
+}
 
 // ════════════════════════════════════════════
 // SAO LƯU DỮ LIỆU
