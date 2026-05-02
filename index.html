@@ -1240,10 +1240,10 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
           <strong style="font-family:'Lora',Georgia,serif;font-size:16px;color:var(--ink);">Lưu ý về dữ liệu</strong>
         </div>
         <ul style="list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:7px;">
-          <li style="font-size:13px;display:flex;gap:8px;"><span>🔒</span><span><strong>Hoàn toàn riêng tư</strong> - dữ liệu lưu trên thiết bị của bạn, không gửi lên bất kỳ máy chủ nào</span></li>
-          <li style="font-size:13px;display:flex;gap:8px;"><span>📵</span><span><strong>Không tự đồng bộ</strong> giữa các thiết bị - điện thoại và máy tính lưu riêng</span></li>
-          <li style="font-size:13px;display:flex;gap:8px;"><span>⚠️</span><span><strong>Xóa bộ nhớ trình duyệt</strong> sẽ làm mất dữ liệu - hãy sao lưu định kỳ</span></li>
-          <li style="font-size:13px;display:flex;gap:8px;"><span>👨‍👩‍👧</span><span><strong>Chia sẻ cho người thân:</strong> gửi link ứng dụng kèm file sao lưu, họ khôi phục là có ngay toàn bộ danh sách</span></li>
+          <li style="font-size:var(--fs-md);display:flex;gap:8px;"><span>🔒</span><span><strong>Hoàn toàn riêng tư</strong> - dữ liệu lưu trên thiết bị của bạn, không gửi lên bất kỳ máy chủ nào</span></li>
+          <li style="font-size:var(--fs-md);display:flex;gap:8px;"><span>📵</span><span><strong>Không tự đồng bộ</strong> giữa các thiết bị - điện thoại và máy tính lưu riêng</span></li>
+          <li style="font-size:var(--fs-md);display:flex;gap:8px;"><span>⚠️</span><span><strong>Xóa bộ nhớ trình duyệt</strong> sẽ làm mất dữ liệu - hãy sao lưu định kỳ</span></li>
+          <li style="font-size:var(--fs-md);display:flex;gap:8px;"><span>👨‍👩‍👧</span><span><strong>Chia sẻ cho người thân:</strong> gửi link ứng dụng kèm file sao lưu, họ khôi phục là có ngay toàn bộ danh sách</span></li>
         </ul>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
           <button onclick="backupData()" style="padding:9px 18px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;display:inline-flex;align-items:center;gap:7px;">💾 Sao lưu dữ liệu</button>
@@ -1354,7 +1354,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
           <div style="text-align:center;margin:10px 0 14px;">
             <span style="display:inline-block;font-size:28px;font-weight:700;letter-spacing:10px;color:var(--red);font-family:'Lora',Georgia,serif;background:var(--input-bg);padding:10px 24px;border-radius:10px;border:2px dashed var(--border);">1234</span>
           </div>
-          <div class="hdsd-warn">⚠️ Khuyến nghị đổi mã PIN sau khi cài đặt nếu thiết bị dùng chung. Liên hệ người quản trị ứng dụng để được hỗ trợ đổi PIN.</div>
+
           <p class="hdsd-subtitle">Các thao tác trong mục Sửa dữ liệu</p>
           <ul class="hdsd-steps" style="list-style:none;padding:0;">
             <li style="display:flex;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--border);">✏️ <span>Chỉnh sửa tên, ngày tháng, loại giỗ, ghi chú từng mục</span></li>
@@ -2337,7 +2337,11 @@ function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('vi
 function toggleAcc(id){
   const el=document.getElementById(id);
   if(!el)return;
-  el.classList.toggle('open');
+  const isOpen=el.classList.contains('open');
+  // Đóng tất cả accordion đang mở
+  document.querySelectorAll('.hdsd-accordion.open').forEach(a=>a.classList.remove('open'));
+  // Nếu chưa mở thì mở, nếu đã mở thì giữ đóng (toggle)
+  if(!isOpen)el.classList.add('open');
 }
 function switchHdsdTab(tab){
   const ios=document.getElementById('hdsd-content-ios');
