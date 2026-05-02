@@ -1239,6 +1239,19 @@ footer {
 }
 [data-theme="dark"] .hdsd-success-tip { background: linear-gradient(135deg, #1a2e1a 0%, #162516 100%); border-color: #4a7a4a; color: #88cc88; }
 
+/* === FONT THỐNG NHẤT - toàn bộ HDSD dùng Lora, heading dùng Playfair === */
+.page-overlay,
+.page-overlay * {
+  font-family: 'Lora', Georgia, serif;
+}
+.page-overlay-title,
+.hdsd-section-header h3,
+.hdsd-acc-label strong,
+.hdsd h3,
+.hdsd-accordion .hdsd-acc-header strong {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
 /* HDSD content styles */
 .hdsd h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--red); margin: 24px 0 10px; display: flex; align-items: center; gap: 7px; }
 .hdsd h3:first-child { margin-top: 0; }
@@ -1257,6 +1270,14 @@ footer {
 .hdsd code { background: var(--input-bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace; }
 
 /* === TIỆN ÍCH OVERLAY === */
+/* Font inheritance - toàn bộ tiện ích dùng Lora, heading Playfair */
+.tienich-overlay,
+.tienich-overlay * { font-family: 'Lora', Georgia, serif; }
+.tienich-header-title,
+.tienich-tab,
+.conv-result-main,
+.lcal-month-label { font-family: 'Playfair Display', Georgia, serif; }
+
 .tienich-overlay {
   display: none;
   position: fixed;
@@ -1265,7 +1286,7 @@ footer {
   z-index: 4500;
   align-items: flex-start;
   justify-content: center;
-  padding: 16px;
+  padding: calc(env(safe-area-inset-top) + 20px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 16px) calc(env(safe-area-inset-left) + 16px);
   overflow-y: auto;
 }
 .tienich-overlay.visible { display: flex; }
@@ -1277,7 +1298,8 @@ footer {
   box-shadow: 0 12px 48px rgba(0,0,0,.28);
   animation: slideIn .28s ease;
   overflow: hidden;
-  margin: auto;
+  margin: 0 auto;
+  flex-shrink: 0;
 }
 .tienich-header {
   background: linear-gradient(135deg, #7a5c00 0%, #b8860b 100%);
@@ -1705,7 +1727,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.11 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V.1.5.11 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1983,8 +2005,31 @@ footer {
         </div>
       </div>
 
+      <!-- Accordion 5: Giới thiệu về tác giả -->
+      <div class="hdsd-accordion" id="acc-author">
+        <button class="hdsd-acc-header" data-acc="acc-author">
+          <span class="hdsd-acc-icon">👤</span>
+          <span class="hdsd-acc-label">
+            <strong>Giới thiệu về tác giả</strong>
+            <span>Người tạo ra ứng dụng này là ai?</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <div style="padding-top:14px;line-height:1.85;font-size:var(--fs-md);">
+            <p style="font-weight:600;color:var(--gold);">Yêu công nghệ · Thích máy tính · Đam mê giải pháp.</p>
+            <p style="margin-top:10px;">Dù không xuất thân từ ngành lập trình, mình đã tận dụng sức mạnh của AI để xây dựng nên các ứng dụng tiện ích nhỏ cho đời sống và công việc hàng ngày. Mình tin rằng những giải pháp nhỏ này sẽ giúp ích cho mọi người cũng như cách nó đã giúp ích cho chính mình.</p>
+            <p style="margin-top:10px;">Rất vui nếu ứng dụng này đồng hành hiệu quả cùng bạn!</p>
+            <div class="hdsd-info" style="margin-top:14px;">
+              📧 Mọi đóng góp, phản hồi xin gửi về email:
+              <a href="mailto:pave.hai@gmail.com" style="color:var(--blue);font-weight:600;text-decoration:none;margin-left:4px;">pave.hai@gmail.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
-        Lịch Giỗ Dòng Họ · Phát triển bởi <strong>Pavel Hải</strong> · Tháng 4/2026
+        V.1.5.11 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026
       </div>
     </div>
   </div>
@@ -2820,6 +2865,7 @@ function showICSModal() {
   const okBtn = document.getElementById('ics-modal-ok');
   if (okBtn) okBtn.disabled = true;
   document.getElementById('ics-modal').classList.add('visible');
+  document.body.style.overflow = 'hidden';
 }
 
 function selectICSYears(n) {
@@ -2829,7 +2875,10 @@ function selectICSYears(n) {
   if (okBtn) okBtn.disabled = false;
 }
 
-function closeICSModal() { document.getElementById('ics-modal').classList.remove('visible'); }
+function closeICSModal() {
+  document.getElementById('ics-modal').classList.remove('visible');
+  document.body.style.overflow = '';
+}
 
 function doExportICS() {
   if (!_icsSelectedYears) return;
@@ -2958,7 +3007,12 @@ function showHDSD() {
     overlay.addEventListener('scroll', overlay._hdsdScrollFn);
   }
 }
-function hideHDSD() { document.getElementById('hdsd-overlay').classList.remove('visible'); document.body.style.overflow = ''; }
+function hideHDSD() {
+  document.getElementById('hdsd-overlay').classList.remove('visible');
+  document.body.style.overflow = '';
+  // Reset tất cả accordion về đóng - khi quay lại sẽ bắt đầu từ trạng thái thu gọn
+  document.querySelectorAll('.hdsd-accordion.open').forEach(a => a.classList.remove('open'));
+}
 
 function toggleAcc(id) {
   const el = document.getElementById(id); if (!el) return;
