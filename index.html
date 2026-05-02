@@ -239,9 +239,12 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 [data-theme="dark"] .lcal-day.other-month .d-solar{color:#444;}
 [data-theme="dark"] .lcal-day.other-month .d-lunar{color:#333;}
 .lcal-day.today-mark .d-solar{
-  background:var(--red);color:white;border-radius:50%;
+  background:rgba(139,26,26,0.45);color:var(--ink);border-radius:50%;
   width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
   font-weight:700;
+}
+[data-theme="dark"] .lcal-day.today-mark .d-solar{
+  background:rgba(192,57,43,0.4);color:var(--ink);
 }
 .lcal-day.has-event{background:rgba(184,134,11,.10);border:1px solid rgba(184,134,11,.22);}
 .lcal-day.has-event .d-solar{font-weight:700;}
@@ -581,6 +584,56 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .hdsd-alarm-card.c-nho  .alabel{color:var(--sage);}
 .hdsd-alarm-card .adays{font-size:12px;color:var(--muted);line-height:1.6;}
 .hdsd-tab-btn-active{background:var(--blue)!important;color:white!important;}
+
+/* ── Accordion HDSD ── */
+.hdsd-accordion{border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:10px;}
+.hdsd-acc-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;cursor:pointer;user-select:none;
+  background:var(--card-bg);transition:background .18s;
+  border:none;width:100%;text-align:left;
+}
+.hdsd-acc-header:hover{background:var(--input-bg);}
+.hdsd-acc-icon{font-size:20px;flex-shrink:0;}
+.hdsd-acc-label{flex:1;}
+.hdsd-acc-label strong{display:block;font-family:'Lora',Georgia,serif;font-size:15px;color:var(--ink);font-weight:600;}
+.hdsd-acc-label span{font-size:12px;color:var(--muted);margin-top:1px;display:block;}
+.hdsd-acc-arrow{font-size:12px;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+.hdsd-accordion.open .hdsd-acc-arrow{transform:rotate(180deg);}
+.hdsd-acc-body{
+  display:none;padding:0 18px 16px;
+  border-top:1px solid var(--border);background:var(--card-bg);
+  animation:slideIn .2s ease;
+}
+.hdsd-accordion.open .hdsd-acc-body{display:block;}
+/* data-open mặc định mở sẵn */
+.hdsd-accordion.default-open .hdsd-acc-body{display:block;}
+.hdsd-accordion.default-open .hdsd-acc-arrow{transform:rotate(180deg);}
+
+/* tip box trong accordion */
+.hdsd-tip{background:var(--cat-nho-bg);border-left:3px solid var(--sage);
+  border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;color:var(--ink);}
+.hdsd-warn{background:var(--cat-cung-bg);border-left:3px solid var(--red-light);
+  border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;color:var(--ink);}
+.hdsd-info{background:var(--cat-gui-bg);border-left:3px solid var(--blue);
+  border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;color:var(--ink);}
+.hdsd-steps{padding-left:0;list-style:none;margin:8px 0;}
+.hdsd-steps li{display:flex;gap:10px;padding:6px 0;font-size:14px;line-height:1.5;border-bottom:1px solid var(--border);}
+.hdsd-steps li:last-child{border-bottom:none;}
+.hdsd-step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--red);color:white;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.hdsd-subtitle{font-weight:700;color:var(--ink);margin:12px 0 4px;font-size:14px;}
+[data-theme="dark"] .hdsd-accordion{border-color:var(--border);}
+[data-theme="dark"] .hdsd-acc-header{background:var(--surface);}
+[data-theme="dark"] .hdsd-acc-header:hover{background:var(--surface2);}
+[data-theme="dark"] .hdsd-acc-body{background:var(--surface);}
+[data-theme="dark"] .hdsd-tip{background:var(--cat-nho-bg);}
+[data-theme="dark"] .hdsd-warn{background:var(--cat-cung-bg);}
+[data-theme="dark"] .hdsd-info{background:var(--cat-gui-bg);}
 .hdsd-tab-btn-inactive{background:var(--border2)!important;color:var(--ink2)!important;}
 .hdsd-success-tip{
   background:linear-gradient(135deg,#f0fdf4 0%,#e8f5e9 100%);
@@ -606,6 +659,12 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .hdsd h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--red);margin:24px 0 10px;display:flex;align-items:center;gap:7px;}
 .hdsd h3:first-child{margin-top:0;}
 .hdsd p,.hdsd li{font-size:var(--fs-md);line-height:1.8;color:var(--ink);}
+.hdsd-acc-body p,.hdsd-acc-body li,.hdsd-acc-body span,.hdsd-acc-body em,
+.hdsd-acc-body code,.hdsd-acc-body a{font-family:'Lora',Georgia,serif;}
+.hdsd-acc-label strong,.hdsd-acc-label span{font-family:'Lora',Georgia,serif;}
+.hdsd-subtitle{font-family:'Lora',Georgia,serif;}
+.hdsd-tip,.hdsd-warn,.hdsd-info{font-family:'Lora',Georgia,serif;}
+.hdsd-steps li{font-family:'Lora',Georgia,serif;}
 .hdsd ol,.hdsd ul{padding-left:22px;margin:8px 0;}
 .hdsd li{margin-bottom:4px;}
 .hdsd .tip{background:#f0faf4;border-left:4px solid var(--sage);border-radius:6px;padding:12px 16px;margin:14px 0;font-size:14px;color:var(--muted);font-style:italic;line-height:1.7;}
@@ -1043,6 +1102,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
         <div class="edit-actions-left">
           <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ Xóa toàn bộ dữ liệu</button>
           <button class="btn-backup-inline" onclick="backupData()">💾 Sao lưu dữ liệu</button>
+          <button class="btn-backup-inline" onclick="showRestoreModal()" style="background:var(--blue);">📂 Khôi phục dữ liệu</button>
         </div>
         <div class="edit-actions-right">
           <button class="btn-lock-edit" onclick="lockEdit()">🔒 Khoá lại</button>
@@ -1058,7 +1118,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.8 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.10 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1170,140 +1230,202 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
       <button class="btn-back" onclick="hideHDSD()">← Quay lại</button>
       <div class="page-overlay-title">📖 Hướng dẫn</div>
     </div>
-    <!-- Scroll-to-top float button trong HDSD -->
     <button class="hdsd-scroll-top" id="hdsd-scroll-top" onclick="document.getElementById('hdsd-overlay').scrollTo({top:0,behavior:'smooth'})" title="Về đầu trang">↑</button>
     <div class="hdsd">
 
-      <!-- LƯU Ý DỮ LIỆU -->
-      <h3 style="margin-top:0">💾 Lưu ý về dữ liệu</h3>
-      <div class="device-block" style="border-left:4px solid var(--gold);background:var(--upcoming-bg);">
-        <p>Toàn bộ dữ liệu ngày giỗ được <strong>lưu trực tiếp trên thiết bị của bạn</strong> (bộ nhớ trình duyệt - localStorage), không gửi lên bất kỳ máy chủ nào.</p>
-        <p style="margin-top:10px">Điều này có nghĩa là:</p>
-        <ul style="margin-top:8px">
-          <li>📵 <strong>Không đồng bộ</strong> giữa các thiết bị - dữ liệu nhập trên điện thoại sẽ không hiện trên máy tính và ngược lại</li>
-          <li>🔒 <strong>Hoàn toàn riêng tư</strong> - không ai khác có thể xem dữ liệu của bạn</li>
-          <li>⚠️ <strong>Xoá dữ liệu trình duyệt/đổi trình duyệt</strong> sẽ làm mất toàn bộ dữ liệu đã nhập</li>
+      <!-- ══ LƯU Ý DỮ LIỆU (luôn hiển thị) ══ -->
+      <div style="background:var(--upcoming-bg);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:20px;">💾</span>
+          <strong style="font-family:'Lora',Georgia,serif;font-size:16px;color:var(--ink);">Lưu ý về dữ liệu</strong>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:7px;">
+          <li style="font-size:13px;display:flex;gap:8px;"><span>🔒</span><span><strong>Hoàn toàn riêng tư</strong> - dữ liệu lưu trên thiết bị của bạn, không gửi lên bất kỳ máy chủ nào</span></li>
+          <li style="font-size:13px;display:flex;gap:8px;"><span>📵</span><span><strong>Không tự đồng bộ</strong> giữa các thiết bị - điện thoại và máy tính lưu riêng</span></li>
+          <li style="font-size:13px;display:flex;gap:8px;"><span>⚠️</span><span><strong>Xóa bộ nhớ trình duyệt</strong> sẽ làm mất dữ liệu - hãy sao lưu định kỳ</span></li>
+          <li style="font-size:13px;display:flex;gap:8px;"><span>👨‍👩‍👧</span><span><strong>Chia sẻ cho người thân:</strong> gửi link ứng dụng kèm file sao lưu, họ khôi phục là có ngay toàn bộ danh sách</span></li>
         </ul>
-        <p style="margin-top:12px">👉 <strong>Khuyến nghị:</strong> Khi thêm dữ liệu mới, hãy dùng chức năng <strong>Sao lưu dữ liệu</strong> và gửi mail cho chính mình file đã tạo để lưu trữ - hoặc dùng cách khác thuận tiện cho bạn như lưu vào Drive, iCloud...</p>
-        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-          <button onclick="backupData()" style="padding:10px 20px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">💾 Sao lưu dữ liệu</button>
-          <button onclick="showRestoreModal()" style="padding:10px 20px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;">📂 Khôi phục dữ liệu</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+          <button onclick="backupData()" style="padding:9px 18px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;display:inline-flex;align-items:center;gap:7px;">💾 Sao lưu dữ liệu</button>
+          <button onclick="showRestoreModal()" style="padding:9px 18px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Lora',serif;font-size:var(--fs-base);cursor:pointer;display:inline-flex;align-items:center;gap:7px;">📂 Khôi phục dữ liệu</button>
         </div>
       </div>
 
-      <hr>
-
-      <!-- PHẦN 1: Tạo shortcut -->
-      <div class="hdsd-section-header">
-        <span class="hdsd-sec-icon">📱</span>
-        <div>
-          <h3>Thêm vào màn hình chính</h3>
-          <p>Dùng như ứng dụng native - không cần cài đặt</p>
-        </div>
-      </div>
-      <div class="hdsd-section-body">
-        <div class="hdsd-link-row">
-          🔗 Link ứng dụng: <a href="https://sumo2025.github.io/lich-gio" target="_blank" rel="noopener">https://sumo2025.github.io/lich-gio</a>
-        </div>
-        <!-- Tab switch iOS / Android -->
-        <div style="display:flex;gap:10px;padding:14px 16px 0;justify-content:center;">
-          <button id="hdsd-tab-ios" onclick="switchHdsdTab('ios')"
-            style="padding:10px 24px;border-radius:22px;border:none;cursor:pointer;font-size:15px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:1;transition:all .2s;">
-            🍎 iPhone / iOS
-          </button>
-          <button id="hdsd-tab-android" onclick="switchHdsdTab('android')"
-            style="padding:10px 24px;border-radius:22px;border:none;cursor:pointer;font-size:15px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:0.35;transition:all .2s;">
-            🤖 Android
-          </button>
-        </div>
-        <!-- Nội dung iOS -->
-        <div id="hdsd-content-ios" class="device-block" style="border-top:none;margin-top:0;">
-          <ol>
-            <li>Mở trang này trong <strong>Safari</strong> (không dùng Chrome/Firefox)</li>
-            <li>Nhấn nút <strong>Chia sẻ ↑</strong> ở thanh dưới cùng</li>
-            <li>Cuộn xuống và chọn <strong>"Thêm vào Màn hình chính"</strong></li>
-            <li>Nhấn <strong>Thêm</strong> - icon sẽ xuất hiện trên Màn hình chính</li>
-          </ol>
-        </div>
-        <!-- Nội dung Android -->
-        <div id="hdsd-content-android" class="device-block" style="border-top:none;margin-top:0;display:none;">
-          <p style="margin-bottom:10px;font-weight:600;">Chrome <em>(khuyến nghị)</em></p>
-          <ol>
-            <li>Mở trang bằng <strong>Chrome</strong></li>
-            <li>Nhấn <strong>⋮</strong> (3 chấm, góc trên phải)</li>
-            <li>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></li>
-            <li>Nhấn <strong>Thêm</strong> - icon xuất hiện trên màn hình</li>
-          </ol>
-          <p style="margin-top:12px;font-weight:600;">Samsung Internet</p>
-          <ol style="margin-top:6px;">
-            <li>Nhấn <strong>☰</strong> (góc dưới phải)</li>
-            <li>Chọn <strong>"Thêm trang vào"</strong> - <strong>"Màn hình chính"</strong></li>
-          </ol>
-        </div>
-        <div class="hdsd-success-tip">
-          ✅ Sau khi thêm - ứng dụng mở toàn màn hình như app thật, không cần mở trình duyệt!
+      <!-- ══ ACCORDION 1: Thêm vào màn hình chính ══ -->
+      <div class="hdsd-accordion" id="acc-shortcut">
+        <button class="hdsd-acc-header" onclick="toggleAcc('acc-shortcut')">
+          <span class="hdsd-acc-icon">📱</span>
+          <span class="hdsd-acc-label">
+            <strong>Thêm vào màn hình chính</strong>
+            <span>Dùng như ứng dụng native - không cần cài đặt</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <div class="hdsd-info" style="margin-top:14px;">🔗 Link ứng dụng: <a href="https://sumo2025.github.io/lich-gio" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600;">sumo2025.github.io/lich-gio</a></div>
+          <div style="display:flex;gap:8px;margin:12px 0 4px;justify-content:center;">
+            <button id="hdsd-tab-ios" onclick="switchHdsdTab('ios')"
+              style="padding:9px 22px;border-radius:22px;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:1;transition:all .2s;">
+              🍎 iPhone / iOS
+            </button>
+            <button id="hdsd-tab-android" onclick="switchHdsdTab('android')"
+              style="padding:9px 22px;border-radius:22px;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:'Lora',serif;background:var(--blue);color:white;opacity:0.35;transition:all .2s;">
+              🤖 Android
+            </button>
+          </div>
+          <div id="hdsd-content-ios">
+            <ol class="hdsd-steps">
+              <li><span class="hdsd-step-num">1</span><span>Mở link bằng <strong>Safari</strong> (không dùng Chrome/Firefox)</span></li>
+              <li><span class="hdsd-step-num">2</span><span>Nhấn nút <strong>Chia sẻ ↑</strong> ở thanh dưới cùng</span></li>
+              <li><span class="hdsd-step-num">3</span><span>Cuộn xuống, chọn <strong>"Thêm vào Màn hình chính"</strong></span></li>
+              <li><span class="hdsd-step-num">4</span><span>Nhấn <strong>Thêm</strong> - icon xuất hiện trên màn hình chính</span></li>
+            </ol>
+          </div>
+          <div id="hdsd-content-android" style="display:none;">
+            <p class="hdsd-subtitle">Chrome <em style="font-weight:400;">(khuyến nghị)</em></p>
+            <ol class="hdsd-steps">
+              <li><span class="hdsd-step-num">1</span><span>Mở link bằng <strong>Chrome</strong></span></li>
+              <li><span class="hdsd-step-num">2</span><span>Nhấn <strong>⋮</strong> (3 chấm, góc trên phải)</span></li>
+              <li><span class="hdsd-step-num">3</span><span>Chọn <strong>"Thêm vào màn hình chính"</strong> hoặc <strong>"Cài ứng dụng"</strong></span></li>
+              <li><span class="hdsd-step-num">4</span><span>Nhấn <strong>Thêm</strong></span></li>
+            </ol>
+            <p class="hdsd-subtitle">Samsung Internet</p>
+            <ol class="hdsd-steps">
+              <li><span class="hdsd-step-num">1</span><span>Nhấn <strong>☰</strong> (góc dưới phải)</span></li>
+              <li><span class="hdsd-step-num">2</span><span>Chọn <strong>"Thêm trang vào"</strong> - <strong>"Màn hình chính"</strong></span></li>
+            </ol>
+          </div>
+          <div class="hdsd-tip">✅ Sau khi thêm - ứng dụng mở toàn màn hình như app thật, không cần mở trình duyệt!</div>
         </div>
       </div>
 
-      <hr>
-
-      <!-- PHẦN 2: Hướng dẫn xuất lịch nhắc nhở -->
-      <div class="hdsd-section-header hdsd-sec-blue">
-        <span class="hdsd-sec-icon">📅</span>
-        <div>
-          <h3>Xuất lịch nhắc nhở vào điện thoại</h3>
-          <p>Nhập vào Apple Lịch / Google Lịch để nhận nhắc nhở tự động trước ngày giỗ</p>
-        </div>
-      </div>
-      <div class="hdsd-section-body">
-        <div class="hdsd-link-row hdsd-link-row-blue">
-          💡 <strong>Khuyến nghị:</strong> Tạo <em>lịch riêng</em> tên <strong>"Lịch Giỗ Dòng Họ"</strong> để sau này tắt/xóa riêng mà không ảnh hưởng lịch cá nhân.
-        </div>
-
-        <div class="device-block">
-          <h3>🍎 iPhone / iPad</h3>
-          <ol>
-            <li>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></li>
-            <li>App Lịch mở lên - nhấn <strong>"Thêm tất cả"</strong> để thêm tất cả ngày giỗ</li>
-            <li>Chọn lịch muốn lưu vào - nhấn <strong>Xong</strong></li>
+      <!-- ══ ACCORDION 2: Xuất lịch nhắc nhở ══ -->
+      <div class="hdsd-accordion" id="acc-ics">
+        <button class="hdsd-acc-header" onclick="toggleAcc('acc-ics')">
+          <span class="hdsd-acc-icon">📅</span>
+          <span class="hdsd-acc-label">
+            <strong>Xuất lịch nhắc nhở vào điện thoại</strong>
+            <span>Nhận nhắc nhở tự động trước ngày giỗ qua Apple Lịch / Google Lịch</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <div class="hdsd-info" style="margin-top:14px;">💡 <strong>Khuyến nghị:</strong> Tạo lịch riêng tên <strong>"Lịch Giỗ Dòng Họ"</strong> trước khi nhập - dễ xóa/cập nhật sau này mà không ảnh hưởng lịch cá nhân.</div>
+          <p class="hdsd-subtitle">🍎 iPhone / iPad</p>
+          <ol class="hdsd-steps">
+            <li><span class="hdsd-step-num">1</span><span>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></span></li>
+            <li><span class="hdsd-step-num">2</span><span>App Lịch mở lên - nhấn <strong>"Thêm tất cả"</strong></span></li>
+            <li><span class="hdsd-step-num">3</span><span>Chọn lịch muốn lưu vào - nhấn <strong>Xong</strong></span></li>
           </ol>
-          <p style="margin-top:10px;color:var(--muted);font-size:13px;">💡 Nếu không thấy nút "Thêm tất cả" - có thể lịch đó đã được thêm trước đó rồi. Xóa lịch giỗ cũ trong app Lịch rồi thử lại.</p>
-        </div>
-
-        <div class="device-block">
-          <h3>🤖 Android</h3>
-          <ol>
-            <li>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></li>
-            <li>File <code>.ics</code> tải về thư mục <strong>Tải xuống</strong></li>
-            <li>Mở <strong>Google Lịch</strong> - nhấn <strong>☰ - Cài đặt - Nhập sự kiện</strong> - chọn file vừa tải</li>
+          <div class="hdsd-warn">⚠️ Không thấy "Thêm tất cả"? Lịch đó đã được thêm trước đó rồi - xóa lịch giỗ cũ trong app Lịch rồi thử lại.</div>
+          <p class="hdsd-subtitle">🤖 Android</p>
+          <ol class="hdsd-steps">
+            <li><span class="hdsd-step-num">1</span><span>Nhấn <strong>Xuất lịch nhắc nhở</strong> - chọn số năm - nhấn <strong>Xuất</strong></span></li>
+            <li><span class="hdsd-step-num">2</span><span>File <code>.ics</code> tải về thư mục <strong>Tải xuống</strong></span></li>
+            <li><span class="hdsd-step-num">3</span><span>Mở <strong>Google Lịch</strong> - nhấn <strong>☰ - Cài đặt - Nhập sự kiện</strong> - chọn file</span></li>
           </ol>
-          <p style="margin-top:10px"><strong>Hoặc qua máy tính:</strong> Mở <strong>calendar.google.com</strong> - Cài đặt ⚙ - <strong>Nhập &amp; xuất - Nhập</strong> - chọn file - lịch tự đồng bộ về điện thoại.</p>
-          <p style="margin-top:10px">👉 <strong>Tạo lịch riêng:</strong> Google Lịch - <strong>Lịch khác - Tạo lịch mới</strong> - đặt tên - khi nhập file chọn lịch đó.</p>
-        </div>
-
-        <div style="padding:16px 20px;">
-          <p style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Nhắc nhở tự động theo loại giỗ</p>
-          <div class="hdsd-alarm-grid">
-            <div class="hdsd-alarm-card c-cung">
-              <div class="alabel">🕯️ Cúng</div>
-              <div class="adays">Trước <strong>15 ngày</strong><br>Trước <strong>7 ngày</strong><br>Trước <strong>3 ngày</strong></div>
-            </div>
-            <div class="hdsd-alarm-card c-gui">
-              <div class="alabel">📦 Gửi</div>
-              <div class="adays">Trước <strong>3 ngày</strong><br>Trước <strong>1 ngày</strong></div>
-            </div>
-            <div class="hdsd-alarm-card c-nho">
-              <div class="alabel">🌸 Nhớ ngày</div>
-              <div class="adays">Trước <strong>1 ngày</strong></div>
+          <div class="hdsd-tip">💡 Qua máy tính: mở <strong>calendar.google.com</strong> - Cài đặt ⚙ - <strong>Nhập &amp; xuất - Nhập</strong> - chọn file - lịch tự đồng bộ về điện thoại.</div>
+          <div style="padding:12px 0 4px;">
+            <p style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Lịch tự động nhắc theo loại giỗ</p>
+            <div class="hdsd-alarm-grid">
+              <div class="hdsd-alarm-card c-cung"><div class="alabel">🕯️ Cúng</div><div class="adays">Trước <strong>15 ngày</strong><br>Trước <strong>7 ngày</strong><br>Trước <strong>3 ngày</strong></div></div>
+              <div class="hdsd-alarm-card c-gui"><div class="alabel">📦 Gửi</div><div class="adays">Trước <strong>3 ngày</strong><br>Trước <strong>1 ngày</strong></div></div>
+              <div class="hdsd-alarm-card c-nho"><div class="alabel">🌸 Nhớ ngày</div><div class="adays">Trước <strong>1 ngày</strong></div></div>
             </div>
           </div>
-          <p style="font-size:12px;color:var(--muted);font-style:italic;margin-top:8px;">Lịch xuất toàn bộ các năm đã chọn - không bỏ lỡ ngày nào.</p>
         </div>
       </div>
 
-      <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);">
-        <button class="btn-back" onclick="hideHDSD()" style="padding:0 28px;height:44px;font-size:var(--fs-md);">🏠 Về trang chủ</button>
+      <!-- ══ ACCORDION PIN: Mã PIN mục Sửa dữ liệu ══ -->
+      <div class="hdsd-accordion" id="acc-pin">
+        <button class="hdsd-acc-header" onclick="toggleAcc('acc-pin')">
+          <span class="hdsd-acc-icon">🔒</span>
+          <span class="hdsd-acc-label">
+            <strong>Mã PIN mục Sửa dữ liệu</strong>
+            <span>Bảo vệ dữ liệu tránh chỉnh sửa ngoài ý muốn</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <div class="hdsd-info" style="margin-top:14px;">
+            🔒 Tab <strong>Sửa dữ liệu</strong> được bảo vệ bằng mã PIN để tránh chỉnh sửa hoặc xóa dữ liệu ngoài ý muốn - đặc biệt hữu ích khi nhiều người dùng chung thiết bị.
+          </div>
+          <p class="hdsd-subtitle">Mã PIN mặc định</p>
+          <div style="text-align:center;margin:10px 0 14px;">
+            <span style="display:inline-block;font-size:28px;font-weight:700;letter-spacing:10px;color:var(--red);font-family:'Lora',Georgia,serif;background:var(--input-bg);padding:10px 24px;border-radius:10px;border:2px dashed var(--border);">1234</span>
+          </div>
+          <div class="hdsd-warn">⚠️ Khuyến nghị đổi mã PIN sau khi cài đặt nếu thiết bị dùng chung. Liên hệ người quản trị ứng dụng để được hỗ trợ đổi PIN.</div>
+          <p class="hdsd-subtitle">Các thao tác trong mục Sửa dữ liệu</p>
+          <ul class="hdsd-steps" style="list-style:none;padding:0;">
+            <li style="display:flex;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--border);">✏️ <span>Chỉnh sửa tên, ngày tháng, loại giỗ, ghi chú từng mục</span></li>
+            <li style="display:flex;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--border);">💾 <span>Sao lưu toàn bộ dữ liệu ra file JSON</span></li>
+            <li style="display:flex;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--border);">📂 <span>Khôi phục dữ liệu từ file sao lưu</span></li>
+            <li style="display:flex;gap:10px;padding:6px 0;font-size:14px;">🗑️ <span>Xóa toàn bộ dữ liệu (có xác nhận trước khi thực hiện)</span></li>
+          </ul>
+        </div>
       </div>
+
+      <!-- ══ ACCORDION 3: Nhập dữ liệu hàng loạt ══ -->
+      <div class="hdsd-accordion" id="acc-import">
+        <button class="hdsd-acc-header" onclick="toggleAcc('acc-import')">
+          <span class="hdsd-acc-icon">📥</span>
+          <span class="hdsd-acc-label">
+            <strong>Nhập dữ liệu hàng loạt</strong>
+            <span>Từ sổ tay, ảnh chụp, file có sẵn - nhờ AI chuyển đổi</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <div class="hdsd-warn" style="margin-top:14px;">⚠️ Ứng dụng chỉ nhận đúng 3 loại giỗ: <strong>cung</strong> (cúng tại nhà) - <strong>gui</strong> (gửi lễ đi nơi khác) - <strong>nho</strong> (chỉ ghi nhớ). Nhập sai thì bản ghi bị bỏ qua.</div>
+          <p class="hdsd-subtitle">Cách 1 - Từ ảnh chụp / scan / file văn bản</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:6px;">Mở ChatGPT, Claude (claude.ai) hoặc Gemini - đính kèm ảnh hoặc dán nội dung - gửi kèm đoạn nhắn tin sau:</p>
+          <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;font-style:italic;color:var(--ink);line-height:1.7;margin-bottom:10px;">
+            "Hãy chuyển danh sách ngày giỗ này thành file JSON. Mỗi mục gồm các trường: id (số thứ tự bắt đầu từ 1), name (tên người được giỗ), month (tháng âm lịch, số từ 1 đến 12), day (ngày âm lịch, số từ 1 đến 30), cat (loại giỗ - chỉ được dùng đúng một trong 3 từ: cung, gui, hoặc nho), note (ghi chú ngắn hoặc để trống "").<br>Cách tôi phân loại: [ví dụ: "giỗ chính" thì dùng cung, "giỗ gửi" thì dùng gui, còn lại dùng nho]"
+          </div>
+          <p class="hdsd-subtitle">Lưu file JSON (Windows)</p>
+          <ol class="hdsd-steps">
+            <li><span class="hdsd-step-num">1</span><span>Mở <strong>Notepad</strong> - dán nội dung JSON vào</span></li>
+            <li><span class="hdsd-step-num">2</span><span><strong>File - Save As</strong> - ô "Save as type" chọn <strong>All Files</strong></span></li>
+            <li><span class="hdsd-step-num">3</span><span>Đặt tên <strong>lichgio.json</strong> - nhấn Save</span></li>
+          </ol>
+          <p class="hdsd-subtitle">Cách 2 - Từ file Excel (nhiều nguồn, lộn xộn)</p>
+          <p style="font-size:13px;color:var(--muted);">Tải <a href="https://github.com/sumo2025/lich-gio/releases/tag/1.5.10" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600;">file Excel mẫu lichgio_mau_nhap_du_lieu.xlsx</a> - điền vào - chụp ảnh hoặc copy - nhờ AI chuyển sang JSON như Cách 1.</p>
+          <p class="hdsd-subtitle">Nhập file JSON vào ứng dụng</p>
+          <ol class="hdsd-steps">
+            <li><span class="hdsd-step-num">1</span><span>Nhấn <strong>Cài đặt</strong> (góc trên phải)</span></li>
+            <li><span class="hdsd-step-num">2</span><span>Chọn <strong>Khôi phục dữ liệu</strong></span></li>
+            <li><span class="hdsd-step-num">3</span><span>Chọn file <code>lichgio.json</code> - xác nhận</span></li>
+          </ol>
+          <div class="hdsd-warn">⚠️ Khôi phục sẽ thay thế toàn bộ dữ liệu hiện tại. Hãy <strong>Sao lưu</strong> trước nếu đang có dữ liệu cũ.</div>
+        </div>
+      </div>
+
+      <!-- ══ ACCORDION 4: Chuyển dữ liệu sang điện thoại ══ -->
+      <div class="hdsd-accordion" id="acc-transfer">
+        <button class="hdsd-acc-header" onclick="toggleAcc('acc-transfer')">
+          <span class="hdsd-acc-icon">📲</span>
+          <span class="hdsd-acc-label">
+            <strong>Chuyển dữ liệu sang điện thoại</strong>
+            <span>Sau khi nhập trên máy tính - hoặc chia sẻ cho người thân</span>
+          </span>
+          <span class="hdsd-acc-arrow">▼</span>
+        </button>
+        <div class="hdsd-acc-body">
+          <ol class="hdsd-steps" style="margin-top:14px;">
+            <li><span class="hdsd-step-num">1</span><span>Trên máy tính: <strong>Cài đặt - Sao lưu dữ liệu</strong> - lưu file JSON về máy</span></li>
+            <li><span class="hdsd-step-num">2</span><span>Gửi file sang điện thoại qua <strong>Zalo</strong> (nhắn cho chính mình), <strong>email</strong>, hoặc <strong>Google Drive / iCloud</strong></span></li>
+            <li><span class="hdsd-step-num">3</span><span>Trên điện thoại - lưu file xuống bộ nhớ:<br><em>Zalo: nhấn giữ file - Lưu về máy | Email: nhấn file - Tải xuống</em></span></li>
+            <li><span class="hdsd-step-num">4</span><span>Mở ứng dụng - <strong>Cài đặt - Khôi phục dữ liệu</strong> - chọn file - xác nhận</span></li>
+          </ol>
+          <div class="hdsd-tip">👨‍👩‍👧 Chia sẻ cho người thân: gửi link ứng dụng kèm file sao lưu - họ thực hiện từ Bước 3 là có ngay toàn bộ danh sách ngày giỗ.</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+        Lịch Giỗ Dòng Họ · Phát triển bởi <strong>Pavel Hải</strong> · Tháng 4/2026
+      </div>
+
+
     </div>
   </div>
 </div>
@@ -1719,7 +1841,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.8';
+const APP_VERSION='1.5.10';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2212,6 +2334,11 @@ function showHDSD(){
   }
 }
 function hideHDSD(){document.getElementById('hdsd-overlay').classList.remove('visible');document.body.style.overflow='';}
+function toggleAcc(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('open');
+}
 function switchHdsdTab(tab){
   const ios=document.getElementById('hdsd-content-ios');
   const and=document.getElementById('hdsd-content-android');
