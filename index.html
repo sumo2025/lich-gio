@@ -318,7 +318,7 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .upcoming-panel-count{font-size:var(--fs-sm);opacity:.8;font-style:italic;}
 .upcoming-list{padding:0;}
 .upcoming-item{
-  display:grid;grid-template-columns:1fr 88px 114px 82px;
+  display:grid;grid-template-columns:1fr 88px 150px 82px;
   padding:10px 20px;border-bottom:1px solid rgba(184,134,11,.09);
   align-items:center;transition:background .15s;
 }
@@ -331,6 +331,7 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .tag-nho{background:#eafaf1;color:var(--sage);}
 .upcoming-lunar{font-size:var(--fs-base);color:var(--muted);text-align:center;}
 .upcoming-solar{font-size:var(--fs-base);font-weight:600;color:#8a6000;text-align:center;font-family:'Lora',serif;}
+.upcoming-dow{font-size:var(--fs-base);font-weight:400;opacity:.75;white-space:nowrap;}
 .upcoming-days{font-size:var(--fs-base);text-align:center;font-family:'Lora',serif;font-weight:500;}
 .days-today{color:var(--red);font-weight:700;}
 .days-near{color:#b05000;}
@@ -357,7 +358,7 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .cat-nho  .cat-dot{background:var(--sage);}
 .entry-list{padding:0;}
 .entry-row{
-  display:grid;grid-template-columns:1fr 95px 115px;
+  display:grid;grid-template-columns:1fr 95px 160px;
   padding:11px 20px;border-top:1px solid rgba(0,0,0,.04);
   align-items:center;transition:background .15s;
   animation:fadeIn .3s ease;
@@ -369,8 +370,8 @@ header .subtitle{font-size:15px;color:var(--muted);margin-top:6px;font-style:ita
 .entry-name{font-size:var(--fs-md);font-weight:500;color:var(--ink);}
 .entry-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:2px;}
 .entry-lunar{font-size:14px;color:var(--muted);text-align:center;}
-.entry-solar{font-size:var(--fs-base);font-weight:500;text-align:center;font-family:'Lora',serif;}
-.entry-dow{font-size:11px;font-weight:400;opacity:.75;white-space:nowrap;}
+.entry-solar{font-size:var(--fs-base);font-weight:500;text-align:left;font-family:'Lora',serif;}
+.entry-dow{font-size:var(--fs-base);font-weight:400;opacity:.75;white-space:nowrap;}
 .cat-cung .entry-solar{color:var(--red);}
 .cat-gui  .entry-solar{color:var(--blue);}
 .cat-nho  .entry-solar{color:var(--sage);}
@@ -1672,7 +1673,7 @@ function renderLCal(){
   // Dùng tên tháng âm lịch thay số: lấy từ tháng âm của ngày đầu tháng dương
   var lunarOfFirst=solarToLunar(1,SM,SY);
   var lunarMonthName=LUNAR_MN[lunarOfFirst.month]||('Tháng '+lunarOfFirst.month);
-  var html='<div class="lcal-event-title">🕯️ Ngày giỗ trong '+lunarMonthName+' ('+allEv.length+')</div>';
+  var html='<div class="lcal-event-title">🕯️ Ngày giỗ trong tháng</div>';
   allEv.forEach(function(item){
     var noteHtml=item.ev.note?'<span class="lcal-event-note"> - '+esc(item.ev.note)+'</span>':'';
     html+='<div class="lcal-event-item">'
@@ -1858,7 +1859,7 @@ function renderUpcoming(){
   const el=document.getElementById('upcoming-list');
   if(!list.length){el.innerHTML='<div class="upcoming-empty">Không có ngày giỗ nào trong 30 ngày tới.</div>';return;}
   el.innerHTML=list.map(({item,days})=>{
-    const solar=getSolar(item);
+    const {solar,dow}=getSolarWithDow(item);
     let txt,cls;
     if(days===0){txt='Hôm nay';cls='days-today';}
     else if(days<=7){txt=`${days} ngày`;cls='days-near';}
@@ -1866,7 +1867,7 @@ function renderUpcoming(){
     return`<div class="upcoming-item">
       <div><span class="upcoming-name">${esc(item.name)}</span><span class="upcoming-cat-tag tag-${esc(item.cat)}">${esc(CAT_LABELS[item.cat])}</span>${item.note?`<div class="entry-note">${esc(item.note)}</div>`:''}</div>
       <div class="upcoming-lunar">${p2(item.day)}/${p2(item.month)} âm</div>
-      <div class="upcoming-solar">${esc(solar)}</div>
+      <div class="upcoming-solar">${esc(solar)}<span class="upcoming-dow"> (${esc(dow)})</span></div>
       <div class="upcoming-days ${cls}">${esc(txt)}</div>
     </div>`;
   }).join('');
