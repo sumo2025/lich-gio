@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
 <title>Lịch Giỗ Dòng Họ</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%238b1a1a'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='34' font-family='serif'%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E">
@@ -1163,6 +1163,28 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
   </div>
 </div>
 
+<!-- Modal: Hướng dẫn lưu file trên iOS -->
+<div class="confirm-modal-overlay" id="ios-dl-modal" onclick="document.getElementById('ios-dl-modal').classList.remove('visible')">
+  <div class="confirm-modal-box" onclick="event.stopPropagation()" style="max-width:400px">
+    <div class="confirm-modal-top">
+      <div class="confirm-modal-icon">📅</div>
+      <div class="confirm-modal-title" style="color:var(--blue)">Lưu file lịch về máy</div>
+    </div>
+    <p class="confirm-modal-msg">
+      Nhấn nút bên dưới để mở file <code>.ics</code>. Sau đó Safari sẽ hỏi bạn muốn làm gì với file này - chọn <strong>"Thêm tất cả"</strong> để nhập thẳng vào Lịch, hoặc nhấn nút <strong>Chia sẻ ↑</strong> rồi chọn <strong>"Lưu vào Tệp"</strong> để lưu file.
+    </p>
+    <div style="text-align:center;margin-bottom:18px">
+      <a id="ios-dl-link" href="#" target="_blank"
+        style="display:inline-block;padding:13px 28px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-family:'Lora',serif;font-size:var(--fs-md);font-weight:600;letter-spacing:.3px">
+        📥 Nhấn vào đây để mở file
+      </a>
+    </div>
+    <div class="confirm-modal-footer" style="justify-content:center">
+      <button class="confirm-modal-cancel" onclick="document.getElementById('ios-dl-modal').classList.remove('visible')">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <!-- HDSD full-screen overlay -->
 <div class="page-overlay" id="hdsd-overlay">
   <div class="page-overlay-inner">
@@ -2171,40 +2193,37 @@ function doExportICS(){
   showToast(`✓ Đã xuất ${events.length} sự kiện (${startYr}–${endYr})`);
 }
 function dlBlob(content,type,filename){
-  const blob=new Blob([content],{type});
-  const url=URL.createObjectURL(blob);
-  // iOS Safari không hỗ trợ thuộc tính download trên thẻ <a>
-  // → phát hiện iOS và dùng window.open để mở file trong tab mới
   const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
   if(isIOS){
-    // Mở blob URL trong tab mới - người dùng nhấn giữ → Lưu vào File
-    const w=window.open(url,'_blank');
-    if(!w){
-      // Popup bị chặn: fallback hiển thị link modal
-      showIosDownloadModal(url,filename,type);
-    }else{
-      setTimeout(()=>URL.revokeObjectURL(url),60000);
+    // iOS Safari: blob URL luôn mở trang trắng, nút Share bị mờ
+    // → dùng Data URI: Safari nhận dạng đúng loại file, nút Share hoạt động
+    try{
+      // Encode sang base64 để tạo data URI
+      const b64=btoa(unescape(encodeURIComponent(content)));
+      // Lấy MIME type chính (bỏ phần charset)
+      const mime=type.split(';')[0].trim();
+      const dataUri='data:'+mime+';base64,'+b64;
+      showIosDownloadModal(dataUri,filename);
+    }catch(e){
+      // Fallback nếu btoa lỗi (nội dung quá lớn)
+      showToast('⚠ File quá lớn, không thể xuất trên iOS.');
     }
     return;
   }
+  // Desktop / Android: dùng blob URL + <a download>
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),5000);
 }
 
-// Hiển thị modal hướng dẫn lưu file cho iOS khi popup bị chặn
-function showIosDownloadModal(url,filename,type){
-  // Tái sử dụng backup-modal để hiển thị hướng dẫn
-  const box=document.getElementById('backup-modal');
-  if(!box){window.open(url,'_blank');return;}
-  const title=box.querySelector('.backup-modal-title');
-  const msg=box.querySelector('.backup-modal-msg');
-  const btn=box.querySelector('.backup-modal-btn');
-  if(title)title.textContent='Tải file về thiết bị';
-  if(msg)msg.innerHTML=
-    'Trình duyệt chặn cửa sổ mới. Vui lòng nhấn nút bên dưới để mở file, sau đó nhấn giữ → <strong>"Tải về"</strong> hoặc <strong>"Lưu vào Tệp"</strong>.'
-    +'<br><br><a href="'+url+'" download="'+esc(filename)+'" target="_blank" style="display:inline-block;margin-top:8px;padding:10px 20px;background:var(--blue);color:white;border-radius:8px;text-decoration:none;font-family:\'Lora\',serif;">📥 Mở file '+esc(filename)+'</a>';
-  if(btn){btn.textContent='Đóng';btn.onclick=function(){closeBackupModal();setTimeout(()=>URL.revokeObjectURL(url),5000);};}
+// Modal iOS: hiển thị link Data URI kèm hướng dẫn từng bước
+function showIosDownloadModal(dataUri,filename){
+  const box=document.getElementById('ios-dl-modal');
+  if(!box)return;
+  const link=box.querySelector('#ios-dl-link');
+  if(link){link.href=dataUri;link.download=filename;link.textContent='📥 Nhấn vào đây để mở file';}
   box.classList.add('visible');
 }
 
