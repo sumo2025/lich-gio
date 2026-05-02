@@ -2195,22 +2195,26 @@ function doExportICS(){
 function dlBlob(content,type,filename){
   const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
   if(isIOS){
-    // iOS Safari: blob URL luôn mở trang trắng, nút Share bị mờ
-    // → dùng Data URI: Safari nhận dạng đúng loại file, nút Share hoạt động
+    // iOS Safari: dùng Data URI thay blob URL
+    // btoa() không xử lý Unicode → dùng TextEncoder → Uint8Array → base64 thủ công
     try{
-      // Encode sang base64 để tạo data URI
-      const b64=btoa(unescape(encodeURIComponent(content)));
-      // Lấy MIME type chính (bỏ phần charset)
+      const bytes=new TextEncoder().encode(content);
+      let b64='';
+      // Chuyển Uint8Array → chuỗi binary rồi btoa
+      const chunkSize=8192;
+      for(let i=0;i<bytes.length;i+=chunkSize){
+        b64+=String.fromCharCode(...bytes.subarray(i,i+chunkSize));
+      }
+      b64=btoa(b64);
       const mime=type.split(';')[0].trim();
       const dataUri='data:'+mime+';base64,'+b64;
       showIosDownloadModal(dataUri,filename);
     }catch(e){
-      // Fallback nếu btoa lỗi (nội dung quá lớn)
-      showToast('⚠ File quá lớn, không thể xuất trên iOS.');
+      showToast('⚠ Không thể xuất file: '+e.message);
     }
     return;
   }
-  // Desktop / Android: dùng blob URL + <a download>
+  // Desktop / Android
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;
