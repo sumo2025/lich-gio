@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Expires" content="0">
 <!-- [SEC-4] Content Security Policy: chặn script ngoài, không gọi API, không exfiltration -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; object-src 'none'; base-uri 'self'; connect-src 'none'; worker-src blob:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; base-uri 'self';">
 <title>Lịch Giỗ Dòng Họ</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%238b1a1a'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='34' font-family='serif'%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E">
@@ -1056,7 +1056,7 @@ footer{text-align:center;padding:22px 20px 20px;margin-top:30px;border-top:1px s
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V1.5.4 · <strong>Tạo bởi Lê Minh Hải</strong></span>
+    <span>V1.5.6 · <strong>Tạo bởi Lê Minh Hải</strong></span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -1717,7 +1717,7 @@ function switchTTab(tab){
 // ════════════════════════════════════════════
 // [SEC] BẢO MẬT
 // ════════════════════════════════════════════
-const APP_VERSION='1.5.4';
+const APP_VERSION='1.5.6';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s){
@@ -2147,31 +2147,28 @@ function doExportICS(){
   const seen=new Set();const events=[];
   const years=[];
   for(let y=startYr;y<=endYr;y++)years.push(y);
-  const stamp=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
   data.forEach(item=>{
     years.forEach(y=>{
       try{
         const[d,m,ey]=lunarToSolar(item.day,item.month,y);
         const uid='ngaygio-'+item.id+'-'+y+'@hle';
         if(seen.has(uid))return;seen.add(uid);
-        // Dùng timestamp 08:00 giờ VN (UTC+7 → 01:00 UTC)
-        const ds=ey+p2(m)+p2(d)+'T010000Z';
-        const de=ey+p2(m)+p2(d)+'T020000Z';
+        const ds=ey+p2(m)+p2(d);
         const cat=CAT_LABELS[item.cat]||item.cat;
         const sum='Ngày giỗ: '+escICS(item.name)+' ('+escICS(cat)+')';
-        const desc='Ngày âm lịch: '+p2(item.day)+'/'+p2(item.month)+'\\nLoại: '+escICS(cat)+(item.note?'\\nGhi chú: '+escICS(item.note):'')+'\\nHọ Lê';
-        const alarms=buildAlarms(sum,item.cat);
-        events.push([
+        const desc='Am lich: '+p2(item.day)+'/'+p2(item.month)+(item.note?' - '+escICS(item.note):'');
+        const lines=[
           'BEGIN:VEVENT',
           'UID:'+uid,
           'DTSTAMP:'+stamp,
-          'DTSTART:'+ds,
-          'DTEND:'+de,
+          'DTSTART;VALUE=DATE:'+ds,
+          'DTEND;VALUE=DATE:'+ds,
           'SUMMARY:'+sum,
           'DESCRIPTION:'+desc,
-          alarms,
           'END:VEVENT'
-        ].join('\r\n'));
+        ];
+        events.push(lines.join('\r\n'));
       }catch(e){}
     });
   });
@@ -2180,33 +2177,20 @@ function doExportICS(){
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//Ho Le//NgayGio//VI',
-    'CALSCALE:GREGORIAN',
-    'X-WR-CALNAME:Lịch Giỗ Dòng Họ',
-    'X-WR-TIMEZONE:Asia/Ho_Chi_Minh',
     events.join('\r\n'),
     'END:VCALENDAR'
   ].join('\r\n');
   dlBlob(ics,'text/calendar;charset=utf-8',fname);
   showToast('✓ Đã xuất '+events.length+' sự kiện ('+startYr+'–'+endYr+')');
 }
+
 function dlBlob(content,type,filename){
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  if(isIOS&&type.includes('calendar')){
-    // iOS Safari: data URI không có thuộc tính download
-    // → Safari nhận MIME text/calendar → mở thẳng app Lịch với nút "Add All"
-    const bytes=new TextEncoder().encode(content);
-    let bin='';for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
-    const a=document.createElement('a');
-    a.href='data:text/calendar;base64,'+btoa(bin);
-    // KHÔNG đặt a.download - Safari cần không có download attr để mở app Lịch
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    return;
-  }
   const blob=new Blob([content],{type});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
 // ════════════════════════════════════════════
