@@ -2845,6 +2845,30 @@ function saveEdits() {
 }
 
 // === EXPORT ICS (có alarm - bug fix) ===
+// === MODAL MANAGER ===
+// Counter-based: body.overflow chỉ unlock khi TẤT CẢ modal đã đóng
+const _modal = {
+  _count: 0,
+  open(id) {
+    document.getElementById(id).classList.add('visible');
+    this._count++;
+    document.body.style.overflow = 'hidden';
+  },
+  close(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('visible');
+    this._count = Math.max(0, this._count - 1);
+    if (this._count === 0) document.body.style.overflow = '';
+  },
+  closeEl(el) {
+    if (!el) return;
+    el.classList.remove('visible');
+    this._count = Math.max(0, this._count - 1);
+    if (this._count === 0) document.body.style.overflow = '';
+  }
+};
+
 function buildAlarms(summary, cat) {
   const offsets = { cung: ['-P15D','-P7D','-P3D'], gui: ['-P3D','-P1D'], nho: ['-P1D'] };
   const labels  = { '-P15D':'15 ngày nữa', '-P7D':'7 ngày nữa', '-P3D':'3 ngày nữa', '-P1D':'ngày mai' };
@@ -2864,8 +2888,7 @@ function showICSModal() {
   document.querySelectorAll('.ics-year-btn').forEach(b => b.classList.remove('selected'));
   const okBtn = document.getElementById('ics-modal-ok');
   if (okBtn) okBtn.disabled = true;
-  document.getElementById('ics-modal').classList.add('visible');
-  document.body.style.overflow = 'hidden';
+  _modal.open('ics-modal');
 }
 
 function selectICSYears(n) {
@@ -2875,10 +2898,7 @@ function selectICSYears(n) {
   if (okBtn) okBtn.disabled = false;
 }
 
-function closeICSModal() {
-  document.getElementById('ics-modal').classList.remove('visible');
-  document.body.style.overflow = '';
-}
+function closeICSModal() { _modal.close('ics-modal'); }
 
 function doExportICS() {
   if (!_icsSelectedYears) return;
@@ -2940,22 +2960,22 @@ function backupData() {
   const fname = 'lichgio_backup_'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'.json';
   const msgEl = document.getElementById('confirm-backup-msg');
   if (msgEl) msgEl.innerHTML = 'File <strong>'+esc(fname)+'</strong> sẽ được lưu vào:<br><br><strong>📁 '+esc(folder)+'</strong>';
-  document.getElementById('confirm-backup-modal').classList.add('visible');
+  _modal.open('confirm-backup-modal');
 }
 
 function doBackupConfirmed() {
-  document.getElementById('confirm-backup-modal').classList.remove('visible');
+  _modal.close('confirm-backup-modal');
   try {
     const backup = { version: APP_VERSION, exportedAt: new Date().toISOString(), data };
     const d = new Date();
     const fname = 'lichgio_backup_'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'.json';
     dlBlob(JSON.stringify(backup, null, 2), 'application/json', fname);
-    document.getElementById('backup-modal').classList.add('visible');
+    _modal.open('backup-modal');
   } catch(e) { showToast('⚠ Không thể xuất dữ liệu.'); }
 }
 
 // === KHÔI PHỤC ===
-function showRestoreModal() { document.getElementById('restore-modal').classList.add('visible'); }
+function showRestoreModal() { _modal.open('restore-modal'); }
 
 function processRestoreFile(file) {
   if (!file.name.endsWith('.json') && file.type !== 'application/json') { showToast('⚠ Vui lòng chọn file .json'); return; }
@@ -2973,7 +2993,7 @@ function processRestoreFile(file) {
       data = valid; nextId = Math.max(...data.map(x => x.id), 0) + 1;
       saveData(data); renderUpcoming(); renderAll();
       if (editUnlocked) renderEditTable();
-      document.getElementById('restore-modal').classList.remove('visible');
+      _modal.close('restore-modal');
       showToast(`✓ Đã khôi phục ${valid.length} bản ghi`);
     } catch(err) { showToast('⚠ File không hợp lệ: '+err.message); }
   };
@@ -2983,11 +3003,11 @@ function processRestoreFile(file) {
 // === XÓA TOÀN BỘ ===
 function confirmDeleteAll() {
   if (!editUnlocked) { showToast('⚠ Chưa xác thực PIN.'); return; }
-  document.getElementById('confirm-delete-modal').classList.add('visible');
+  _modal.open('confirm-delete-modal');
 }
 
 function deleteAllData() {
-  document.getElementById('confirm-delete-modal').classList.remove('visible');
+  _modal.close('confirm-delete-modal');
   data = []; nextId = 1;
   saveData(data); renderUpcoming(); renderAll();
   if (editUnlocked) renderEditTable();
@@ -2998,6 +3018,7 @@ function deleteAllData() {
 function showHDSD() {
   const overlay = document.getElementById('hdsd-overlay');
   overlay.classList.add('visible');
+  _modal._count++;
   document.body.style.overflow = 'hidden';
   overlay.scrollTop = 0;
   const btn = document.getElementById('hdsd-scroll-top');
@@ -3008,8 +3029,7 @@ function showHDSD() {
   }
 }
 function hideHDSD() {
-  document.getElementById('hdsd-overlay').classList.remove('visible');
-  document.body.style.overflow = '';
+  _modal.close('hdsd-overlay');
   // Reset tất cả accordion về đóng - khi quay lại sẽ bắt đầu từ trạng thái thu gọn
   document.querySelectorAll('.hdsd-accordion.open').forEach(a => a.classList.remove('open'));
 }
@@ -3032,11 +3052,10 @@ function switchHdsdTab(tab) {
 let _activeTTab = 'conv';
 function showTienIch() {
   lcalSM = new Date().getMonth()+1; lcalSY = new Date().getFullYear();
-  document.getElementById('tienich-overlay').classList.add('visible');
-  document.body.style.overflow = 'hidden';
+  _modal.open('tienich-overlay');
   if (_activeTTab === 'cal') renderLCal(); else fillConvToday();
 }
-function closeTienIch() { document.getElementById('tienich-overlay').classList.remove('visible'); document.body.style.overflow = ''; }
+function closeTienIch() { _modal.close('tienich-overlay'); }
 function switchTTab(tab) {
   _activeTTab = tab;
   document.querySelectorAll('.tienich-tab').forEach(b => b.classList.remove('active'));
@@ -3126,23 +3145,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Backup modals
   const cbm = document.getElementById('confirm-backup-modal');
-  cbm.addEventListener('click', e => { if (e.target === cbm) cbm.classList.remove('visible'); });
-  document.getElementById('confirm-backup-cancel').addEventListener('click', () => cbm.classList.remove('visible'));
+  cbm.addEventListener('click', e => { if (e.target === cbm) _modal.closeEl(cbm); });
+  document.getElementById('confirm-backup-cancel').addEventListener('click', () => _modal.closeEl(cbm));
   document.getElementById('confirm-backup-ok').addEventListener('click', doBackupConfirmed);
   const bm = document.getElementById('backup-modal');
-  bm.addEventListener('click', e => { if (e.target === bm) bm.classList.remove('visible'); });
-  document.getElementById('backup-modal-close').addEventListener('click', () => bm.classList.remove('visible'));
+  bm.addEventListener('click', e => { if (e.target === bm) _modal.closeEl(bm); });
+  document.getElementById('backup-modal-close').addEventListener('click', () => _modal.closeEl(bm));
 
   // Delete modal
   const cdm = document.getElementById('confirm-delete-modal');
-  cdm.addEventListener('click', e => { if (e.target === cdm) cdm.classList.remove('visible'); });
-  document.getElementById('confirm-delete-cancel').addEventListener('click', () => cdm.classList.remove('visible'));
+  cdm.addEventListener('click', e => { if (e.target === cdm) _modal.closeEl(cdm); });
+  document.getElementById('confirm-delete-cancel').addEventListener('click', () => _modal.closeEl(cdm));
   document.getElementById('confirm-delete-ok').addEventListener('click', deleteAllData);
 
   // Restore modal
   const rm = document.getElementById('restore-modal');
-  rm.addEventListener('click', e => { if (e.target === rm) rm.classList.remove('visible'); });
-  document.getElementById('restore-modal-cancel').addEventListener('click', () => rm.classList.remove('visible'));
+  rm.addEventListener('click', e => { if (e.target === rm) _modal.closeEl(rm); });
+  document.getElementById('restore-modal-cancel').addEventListener('click', () => _modal.closeEl(rm));
   const dropzone = document.getElementById('restore-dropzone');
   dropzone.addEventListener('click', () => document.getElementById('restore-file-input').click());
   dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
