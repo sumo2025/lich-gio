@@ -2878,13 +2878,23 @@ const _modal = {
 };
 
 function buildAlarms(summary, cat) {
-  const offsets = { cung: ['-P15D','-P7D','-P3D'], gui: ['-P3D','-P1D'], nho: ['-P1D'] };
-  const labels  = { '-P15D':'15 ngày nữa', '-P7D':'7 ngày nữa', '-P3D':'3 ngày nữa', '-P1D':'ngày mai' };
-  return (offsets[cat] || offsets.nho).map(t =>
-    ['BEGIN:VALARM','TRIGGER:'+t,'ACTION:DISPLAY',
-     'DESCRIPTION:Nhắc ('+labels[t]+'): '+summary,
-     'END:VALARM'].join('\r\n')
-  ).join('\r\n');
+  // Số ngày nhắc trước theo từng loại giỗ
+  const offsets = { cung: [15,7,3], gui: [3,1], nho: [1] };
+  const labels  = { 15:'15 ngày nữa', 7:'7 ngày nữa', 3:'3 ngày nữa', 1:'ngày mai' };
+  // TRIGGER tính từ DTSTART (all-day = 00:00 UTC ngày giỗ)
+  // Muốn nhắc trước N ngày lúc 06:00 VN (UTC+7) = 23:00 UTC ngày hôm trước
+  // => TRIGGER = -(N*24 + 1)h = -P{N}DT1H
+  return (offsets[cat] || offsets.nho).map(n => {
+    const trigger = '-P' + n + 'DT1H';
+    const lbl = labels[n] || (n + ' ngày nữa');
+    return [
+      'BEGIN:VALARM',
+      'TRIGGER:' + trigger,
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Nhắc (' + lbl + '): ' + summary,
+      'END:VALARM'
+    ].join('\r\n');
+  }).join('\r\n');
 }
 
 let _icsSelectedYears = 0;
@@ -2921,13 +2931,15 @@ function doExportICS() {
     years.forEach(y => {
       try {
         const [d,m,ey] = lunarToSolar(item.day, item.month, y);
+        // [FIX] Chỉ xuất sự kiện từ hôm nay trở về sau
+        const eventDate = new Date(ey, m - 1, d);
+        if (eventDate < today) return;
         const uid = 'ngaygio-'+item.id+'-'+y+'@hle';
         if (seen.has(uid)) return; seen.add(uid);
         const ds  = ey+p2(m)+p2(d);
         const cat = CAT_LABELS[item.cat] || item.cat;
         const sum = 'Ngày giỗ: '+escICS(item.name)+' ('+escICS(cat)+')';
         const desc = 'Am lich: '+p2(item.day)+'/'+p2(item.month)+(item.note?' - '+escICS(item.note):'');
-        // [BUG FIX] Alarm được đính vào đúng chỗ trong VEVENT
         events.push([
           'BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+stamp,
           'DTSTART;VALUE=DATE:'+ds,'DTEND;VALUE=DATE:'+ds,
