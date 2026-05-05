@@ -2879,8 +2879,8 @@ const _modal = {
 
 function buildAlarms(summary, cat) {
   // Số ngày nhắc trước theo từng loại giỗ
-  const offsets = { cung: [15,7,3], gui: [3,1], nho: [1] };
-  const labels  = { 15:'15 ngày nữa', 7:'7 ngày nữa', 3:'3 ngày nữa', 1:'ngày mai' };
+  const offsets = { cung: [14,6,2], gui: [2,0], nho: [0] };
+  const labels  = { 14:'15 ngày nữa', 6:'7 ngày nữa', 2:'3 ngày nữa', 0:'ngày mai' };
   // TRIGGER tính từ DTSTART (all-day = 00:00 giờ địa phương ngày giỗ)
   // Muốn nhắc trước N ngày lúc 06:00 VN (GMT+7)
   // = 00:00 địa phương ngày giỗ - N ngày + 6h = -(N*24 - 6)h = -P{N}DT18H
