@@ -1735,7 +1735,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V.1.5.11 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026</span>
+    <span>V.1.5.12 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -2037,7 +2037,7 @@ footer {
       </div>
 
       <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
-        V.1.5.11 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026
+        V.1.5.12 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026
       </div>
     </div>
   </div>
@@ -2102,7 +2102,7 @@ footer {
 
 
 <script>
-const APP_VERSION = '1.5.11';
+const APP_VERSION = '1.5.12';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s) {
@@ -2881,11 +2881,11 @@ function buildAlarms(summary, cat) {
   // Số ngày nhắc trước theo từng loại giỗ
   const offsets = { cung: [15,7,3], gui: [3,1], nho: [1] };
   const labels  = { 15:'15 ngày nữa', 7:'7 ngày nữa', 3:'3 ngày nữa', 1:'ngày mai' };
-  // TRIGGER tính từ DTSTART (all-day = 00:00 UTC ngày giỗ)
-  // Muốn nhắc trước N ngày lúc 06:00 VN (UTC+7) = 23:00 UTC ngày hôm trước
-  // => TRIGGER = -(N*24 + 1)h = -P{N}DT1H
+  // TRIGGER tính từ DTSTART (all-day = 00:00 giờ địa phương ngày giỗ)
+  // Muốn nhắc trước N ngày lúc 06:00 VN (GMT+7)
+  // = 00:00 địa phương ngày giỗ - N ngày + 6h = -(N*24 - 6)h = -P{N}DT18H
   return (offsets[cat] || offsets.nho).map(n => {
-    const trigger = '-P' + n + 'DT1H';
+    const trigger = '-P' + n + 'DT18H';
     const lbl = labels[n] || (n + ' ngày nữa');
     return [
       'BEGIN:VALARM',
