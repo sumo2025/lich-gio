@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; worker-src 'self'; connect-src https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com; base-uri 'self';">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lịch Giỗ">
@@ -2102,7 +2102,7 @@ footer {
 
 
 <script>
-const APP_VERSION = '1.5.12';
+const APP_VERSION = '1.5.13';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s) {
@@ -3254,33 +3254,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.head.appendChild(link);
 })();
 
-// PWA: Service Worker inline (blob) - cache-first, offline support
-// Đã thêm: service worker vì PWA gốc thiếu - cần để app hoạt động offline khi Add to Home Screen
-(function() {
+// PWA: Service Worker (file that /sw.js) - cache-first, offline support
+// Sua loi 1.5.13: SW cu dang qua Blob URL KHONG BAO GIO dang ky thanh cong
+// (navigator.serviceWorker.register() bat buoc tu choi scriptURL khong phai
+// http:/https: theo dac ta W3C). Tach thanh file sw.js that de offline hoat
+// dong dung. Moi lan bump APP_VERSION o tren, PHAI sua khop APP_VERSION
+// trong sw.js roi deploy lai CA HAI file cung luc.
+function registerSW() {
   if (!('serviceWorker' in navigator)) return;
-  const VER = APP_VERSION;
-  const swCode = `
-const CACHE = 'lichgio-v${APP_VERSION}';
-self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.open(CACHE).then(cache =>
-      cache.match(e.request).then(cached => {
-        const fresh = fetch(e.request).then(res => { cache.put(e.request, res.clone()); return res; }).catch(() => cached);
-        return cached || fresh;
-      })
-    )
-  );
-});`;
-  const blob = new Blob([swCode], {type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-})();
+  navigator.serviceWorker.register('./sw.js').catch(function(err) {
+    console.error('registerSW that bai:', err);
+  });
+}
+registerSW();
 </script>
 
 </body>
