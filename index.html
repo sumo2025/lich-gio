@@ -741,6 +741,41 @@ header .subtitle {
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 
+/* === UPDATE BANNER === */
+.update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--red);
+  color: #fff;
+  font-family: 'Lora', serif;
+  font-size: var(--fs-base);
+  padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  animation: slideDownBanner .3s ease;
+}
+.update-banner.visible { display: flex; }
+.update-banner button {
+  background: #fff;
+  color: var(--red);
+  border: none;
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 36px;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 96px;
+}
+@keyframes slideDownBanner { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+
 /* === FOOTER === */
 footer {
   text-align: center;
@@ -1595,6 +1630,10 @@ footer {
 </script>
 </head>
 <body>
+<div class="update-banner" id="update-banner" role="status" aria-live="polite">
+  <span>🔄 Đã có bản cập nhật mới</span>
+  <button id="update-reload-btn" type="button">Tải lại</button>
+</div>
 <div class="wrapper">
 
   <header>
@@ -2106,7 +2145,7 @@ footer {
 
 
 <script>
-const APP_VERSION = '1.5.15';
+const APP_VERSION = '1.5.16';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s) {
@@ -3133,6 +3172,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Footer: đổ version từ APP_VERSION - tránh hardcode lệch tay mỗi lần bump
   document.getElementById('footer-version').textContent = APP_VERSION;
 
+  // Update banner
+  document.getElementById('update-reload-btn').addEventListener('click', () => location.reload());
+
   // Dark mode restore
   try {
     const t = localStorage.getItem('ngaygio_theme');
@@ -3289,11 +3331,38 @@ document.addEventListener('DOMContentLoaded', () => {
 // http:/https: theo dac ta W3C). Tach thanh file sw.js that de offline hoat
 // dong dung. Moi lan bump APP_VERSION o tren, PHAI sua khop APP_VERSION
 // trong sw.js roi deploy lai CA HAI file cung luc.
+//
+// Sua loi 1.5.15: mo lai app tu Home Screen (khong force-quit, chi resume
+// tu background) KHONG kich hoat mot navigation/fetch moi - iOS chi resume
+// lai đúng trang HTML/JS da nam san trong bo nho, nen APP_VERSION cu van
+// hien dù server da co ban moi. Chi "Add to Home Screen" lai (luon load moi
+// hoan toan) moi thay ban moi. Fix: chu dong goi reg.update() moi khi app
+// quay lai foreground (visibilitychange) va dinh ky 60 phut, phat hien SW
+// moi qua 'updatefound' -> hien banner mo "Tai lai" (KHONG tu reload am
+// tham, tranh mat du lieu dang nhap dang do).
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('./sw.js').catch(function(err) {
+  navigator.serviceWorker.register('./sw.js').then(function(reg) {
+    reg.addEventListener('updatefound', function() {
+      const newSW = reg.installing;
+      if (!newSW) return;
+      newSW.addEventListener('statechange', function() {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          showUpdateBanner();
+        }
+      });
+    });
+    setInterval(function() { reg.update().catch(function() {}); }, 60 * 60 * 1000);
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) reg.update().catch(function() {});
+    });
+  }).catch(function(err) {
     console.error('registerSW that bai:', err);
   });
+}
+function showUpdateBanner() {
+  const b = document.getElementById('update-banner');
+  if (b) b.classList.add('visible');
 }
 registerSW();
 </script>
