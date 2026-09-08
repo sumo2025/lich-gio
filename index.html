@@ -1739,7 +1739,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <span class="footer-ornament">❧</span>
-    <span>V.1.5.12 - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026</span>
+    <span>V.<span id="footer-version"></span> - <strong>Tạo bởi Lê Minh Hải</strong> - Tháng 4/2026</span>
     <span class="footer-ornament">❧</span>
   </div>
 </footer>
@@ -2106,7 +2106,7 @@ footer {
 
 
 <script>
-const APP_VERSION = '1.5.14';
+const APP_VERSION = '1.5.15';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s) {
@@ -3129,6 +3129,9 @@ function updateBackBtn() {
 
 // === EVENT LISTENERS ===
 document.addEventListener('DOMContentLoaded', () => {
+
+  // Footer: đổ version từ APP_VERSION - tránh hardcode lệch tay mỗi lần bump
+  document.getElementById('footer-version').textContent = APP_VERSION;
 
   // Dark mode restore
   try {

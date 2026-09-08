@@ -2,7 +2,7 @@
 // File THAT, deploy cung thu muc voi index.html. KHONG sinh bang Blob URL.
 // Moi lan bump APP_VERSION trong index.html, PHAI sua dong duoi day khop
 // dung version moi roi deploy lai CA HAI file cung luc.
-const APP_VERSION = '1.5.14'; // <-- khop dung version hien tai cua index.html
+const APP_VERSION = '1.5.15'; // <-- khop dung version hien tai cua index.html
 const CACHE = 'lichgio-cache-v' + APP_VERSION;
 
 // Danh sach domain font ngoai can cache rieng (Cach B - xem upgrade-offline-guide.md)
