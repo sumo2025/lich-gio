@@ -1035,6 +1035,8 @@ footer {
   background: var(--paper);
   z-index: 2000;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   animation: fadeIn .25s ease;
 }
 .page-overlay.visible { display: block; }
@@ -1288,6 +1290,8 @@ footer {
   justify-content: center;
   padding: calc(env(safe-area-inset-top) + 20px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 16px) calc(env(safe-area-inset-left) + 16px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .tienich-overlay.visible { display: flex; }
 .tienich-box {
@@ -2102,7 +2106,7 @@ footer {
 
 
 <script>
-const APP_VERSION = '1.5.13';
+const APP_VERSION = '1.5.14';
 
 // [SEC-1] Escape HTML - ngăn XSS
 function esc(s) {
@@ -2854,26 +2858,50 @@ function saveEdits() {
 
 // === EXPORT ICS (có alarm - bug fix) ===
 // === MODAL MANAGER ===
-// Counter-based: body.overflow chỉ unlock khi TẤT CẢ modal đã đóng
+// Counter-based: body chỉ unlock khi TẤT CẢ modal đã đóng.
+// Lưu ý quan trọng: chỉ set body.style.overflow='hidden' KHÔNG đủ để chặn
+// hiện tượng "xuyên thấu" (nền vẫn cuộn) trên iOS Safari - khi overlay con
+// (vd. .tienich-overlay, .page-overlay dùng overflow-y:auto) cuộn chạm biên
+// trên/dưới, touch event sẽ "chain" (truyền tiếp) xuống body và làm nền cuộn
+// dù overflow đã hidden. Cách chặn triệt để: khóa body bằng position:fixed
+// (đưa hẳn ra khỏi luồng cuộn), lưu lại scrollY để khôi phục đúng vị trí khi
+// đóng overlay cuối cùng.
 const _modal = {
   _count: 0,
+  _scrollY: 0,
   open(id) {
     document.getElementById(id).classList.add('visible');
+    if (this._count === 0) this._lockBody();
     this._count++;
-    document.body.style.overflow = 'hidden';
   },
   close(id) {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('visible');
     this._count = Math.max(0, this._count - 1);
-    if (this._count === 0) document.body.style.overflow = '';
+    if (this._count === 0) this._unlockBody();
   },
   closeEl(el) {
     if (!el) return;
     el.classList.remove('visible');
     this._count = Math.max(0, this._count - 1);
-    if (this._count === 0) document.body.style.overflow = '';
+    if (this._count === 0) this._unlockBody();
+  },
+  _lockBody() {
+    this._scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-this._scrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  },
+  _unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, this._scrollY);
   }
 };
 
@@ -3037,9 +3065,7 @@ function deleteAllData() {
 // === HDSD ===
 function showHDSD() {
   const overlay = document.getElementById('hdsd-overlay');
-  overlay.classList.add('visible');
-  _modal._count++;
-  document.body.style.overflow = 'hidden';
+  _modal.open('hdsd-overlay');
   overlay.scrollTop = 0;
   const btn = document.getElementById('hdsd-scroll-top');
   if (btn) {
